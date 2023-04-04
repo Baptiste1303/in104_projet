@@ -22,6 +22,8 @@ void mazeEnv_make(char* file_name){
         printf("Pointeur nul");
      }
 
+
+    /* Récupération de la dimension du labyrinthe */
      if (file) {
          /* lire la premiere ligne avant EOF */
          while( (c=getc(file)) != EOF) {
