@@ -1,7 +1,12 @@
 #### TO DO LIST ####
 
-Generating new environments (maze)
+Create a function which let us see action by action what's happening at a slow rate 
 
 Create Q function : init, reset, delete (free), add 
-store the coefficient in a .txt file so we can reuse the trained model in other circumstances
+store the coefficients in a .txt file 
 
+
+
+OPTIONAL : 
+
+Generating new environments (maze) 

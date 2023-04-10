@@ -2,7 +2,7 @@
 
 
 int dfs(int row, int col){
-    int* current = &visited[row][col];
+    int* current = &visited[row][col]; // pas plutot ** ? 
 
     if(*current == goal){
         return 1;
@@ -39,6 +39,27 @@ int main(){
    dfs(start_row,start_col);
    add_crumbs();
    mazeEnv_render();
+
+    // Training area 
+
+    // Q init 
+
+    // récompens de prendre un mur -10
+
+    for (int k = 0 ; k < nb_episodes ; ++k){
+        mazeEnv_reset();
+
+
+        while(stepOut.done != 1){
+
+
+        }
+
+
+    }
+
+
+
    return 0;
 }
 
