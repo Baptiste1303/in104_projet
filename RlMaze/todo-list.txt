@@ -1,0 +1,7 @@
+#### TO DO LIST ####
+
+Generating new environments (maze)
+
+Create Q function : init, reset, delete (free), add 
+store the coefficient in a .txt file so we can reuse the trained model in other circumstances
+
