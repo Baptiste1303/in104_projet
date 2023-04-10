@@ -14,4 +14,4 @@ clean:
 	rm -f src/*.o
 
 realclean: clean
-	rm -f *.x
+	rm -f src/*.x

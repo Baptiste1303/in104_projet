@@ -38,17 +38,22 @@ void mazeEnv_make(char* file_name){
          /* lire la premiere ligne avant EOF */
          while( (c=getc(file)) != EOF) {
                if(c== '\n'){
-                      break;
+                      break; // plutot boucler sur la fin de ligne ??
                } else if (c==',') {
                       swap = 1;
                } else if (!swap) {
                       rows_s[rows_i]=c;
                       rows_i++;
-               } else {
+               } else { // swap = 1 
                       cols_s[cols_i]= c;
                       cols_i++;
                }
          }
+     }
+
+     if (c == EOF){
+        printf("Error. data is not in the correct format \n");
+        return;
      }
 
      /* convertir le string en nombre */
@@ -62,7 +67,7 @@ void mazeEnv_make(char* file_name){
              c = getc(file);
 
              if (c=='\n'){
-                 c = getc(file);
+                 c = getc(file); // saut de ligne
              } else if (c == 's'){
                start_row = i;
                start_col = j;
@@ -90,7 +95,7 @@ void mazeEnv_render(){
 }
 
 void mazeEnv_render_pos(){
-     mazeEnv[state_row][state_col] = 'o';
+     mazeEnv[state_row][state_col] = 'o'; // pq utiliser variables globale ?
      for (int i=0; i<rows; i++) {
          for (int j=0; j< cols; j++){
              printf("%c ", mazeEnv[i][j]);
@@ -112,6 +117,7 @@ envOutput mazeEnv_step(action a){
     int done = 0;
     envOutput stepOut;
 
+    // cette partie traite les cas de bords 
     if (a==up){
        state_row = max(0,state_row -1);
     }else if (a==down){
