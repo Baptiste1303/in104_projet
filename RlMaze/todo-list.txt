@@ -10,3 +10,7 @@ store the coefficients in a .txt file
 OPTIONAL : 
 
 Generating new environments (maze) 
+
+
+
+ca marche pas
