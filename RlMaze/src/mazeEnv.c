@@ -184,3 +184,18 @@ void add_crumbs(){
      mazeEnv[start_row][start_col]= 's';
 }
 
+void mazeEnv_destroy(){
+    int i;
+    for (i = 0; i < rows; ++i){
+                free(mazeEnv[i]);
+        }
+    free(mazeEnv);
+}
+
+void visited_destroy(){
+    int i ;
+    for (i = 0; i < rows; ++i){
+                free(visited[i]);
+        }
+    free(visited);
+}

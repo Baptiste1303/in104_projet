@@ -1,5 +1,6 @@
 #include "dfs.h"
 
+int nb_episodes = 100;
 
 int dfs(int row, int col){
     int* current = &visited[row][col]; // pas plutot ** ? 
@@ -40,13 +41,17 @@ int main(){
    add_crumbs();
    mazeEnv_render();
 
-    // Training area 
+    // Training area //
 
     // Q init 
 
-    // récompens de prendre un mur -10
+    /*
+    q_init(); // bug ici a regler
+    r_init();
+    
+    
 
-    for (int k = 0 ; k < nb_episodes ; ++k){
+    for (int episode = 0 ; episode < nb_episodes ; ++episode){
         mazeEnv_reset();
 
 
@@ -58,7 +63,14 @@ int main(){
 
     }
 
+    
 
+
+    q_destroy();
+    mazeEnv_destroy();
+    visited_destroy();
+
+    */
 
    return 0;
 }

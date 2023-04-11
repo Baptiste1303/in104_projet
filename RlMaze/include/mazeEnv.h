@@ -63,4 +63,8 @@ void init_visited();
 
 void add_crumbs();
 
+void mazeEnv_destroy();
+
+void visited_destroy();
+
 #endif /* MAZEENV_H */
