@@ -45,12 +45,12 @@ int main(){
 
     // Q init 
 
+    
+    q_init(); 
+    //r_init();
+    
+    
     /*
-    q_init(); // bug ici a regler
-    r_init();
-    
-    
-
     for (int episode = 0 ; episode < nb_episodes ; ++episode){
         mazeEnv_reset();
 
