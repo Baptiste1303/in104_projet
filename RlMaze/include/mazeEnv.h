@@ -5,6 +5,7 @@
 #include <stdlib.h>
 
 extern char** mazeEnv;
+extern char** mazeEnvepisode;
 extern int** visited;
 extern int rows;
 extern int cols;
@@ -51,6 +52,10 @@ void mazeEnv_render();
 
 void mazeEnv_render_pos();
 
+void mazeEnvepisode_init();
+
+void mazeEnvepisode_render_pos();
+
 void mazeEnv_reset();
 
 envOutput mazeEnv_step(action a);
@@ -60,6 +65,8 @@ action env_action_sample();
 void alloc_visited();
 
 void init_visited();
+
+void update_visited(int col, int row);
 
 void add_crumbs();
 

@@ -2,6 +2,7 @@
 #include "functions.h"
 
 char** mazeEnv;
+char** mazeEnvepisode;
 int** visited;
 int rows;
 int cols;
@@ -95,7 +96,7 @@ void mazeEnv_render(){
 }
 
 void mazeEnv_render_pos(){
-     mazeEnv[state_row][state_col] = 'o'; // pq utiliser variables globale ?
+     mazeEnv[state_row][state_col] = 'o'; 
      for (int i=0; i<rows; i++) {
          for (int j=0; j< cols; j++){
              printf("%c ", mazeEnv[i][j]);
@@ -105,32 +106,71 @@ void mazeEnv_render_pos(){
      printf("\n");
 }
 
+void mazeEnvepisode_init(){
+    mazeEnvepisode = malloc(rows * sizeof(char*));
+
+     for(int i=0; i<rows; i++) {
+         mazeEnvepisode[i] = malloc(cols * sizeof(char*));
+     }
+
+     for (int i = 0 ; i < rows ; i++){
+        for (int j = 0 ; j < cols ; j++){
+            mazeEnvepisode[i][j] = mazeEnv[i][j];
+        }
+     }
+}
+
+void mazeEnvepisode_render_pos(){
+     mazeEnvepisode[state_row][state_col] = 'o'; 
+     for (int i=0; i<rows; i++) {
+         for (int j=0; j< cols; j++){
+             printf("%c ", mazeEnvepisode[i][j]);
+         }
+         printf("\n");
+     }
+     printf("\n");
+}
 
 void mazeEnv_reset(){
      state_row = start_row;
      state_col = start_col;
+
+    // Recreate original maze because crumbs can replace wall 
+    mazeEnvepisode_init();
 }
 
-//faire une action &observer récompense et où on se trouve
 envOutput mazeEnv_step(action a){
     int reward = 0;
     int done = 0;
     envOutput stepOut;
 
+    int temp_row; 
+    int temp_col;
+
     // cette partie traite les cas de bords 
     if (a==up){
-       state_row = max(0,state_row -1);
+       temp_row = max(0,state_row -1);
     }else if (a==down){
-       state_row = min(rows,state_row +1);
+       temp_row = min(rows,state_row +1);
     }else if (a==right){
-       state_col = min(cols,state_col +1);
+       temp_col = min(cols,state_col +1);
     }else if (a==left){
-       state_col = max(0,state_col -1);
+       temp_col = max(0,state_col -1);
     }
     
-    if((state_row == goal_row) && (state_col == goal_col)){
-       reward = 10000;
+    if((temp_row == goal_row) && (temp_col == goal_col)){
+       reward = r[goal_row][goal_col];
        done   = 1;
+    }
+
+    if (mazeEnv[temp_row][temp_col] != '+'){
+        state_col = temp_col ;
+        state_row = temp_row ;
+        reward = r[temp_row][temp_col];
+    }
+    else{
+        // Wall case, agent doesn't move
+        reward = -2 ;
     }
 
     stepOut.reward = reward;
@@ -173,6 +213,11 @@ void init_visited()
         }
 }
 
+void update_visited(int col, int row){
+    visited[col][row] = crumb ;
+}
+
+/*
 void add_crumbs(){
      for (int i=0; i<rows; i++){
           for (int j=0; j<cols; j++){
@@ -182,6 +227,18 @@ void add_crumbs(){
           }
      }
      mazeEnv[start_row][start_col]= 's';
+}
+*/
+
+void add_crumbs(){
+     for (int i=0; i<rows; i++){
+          for (int j=0; j<cols; j++){
+              if (visited[i][j] ==crumb){
+                  mazeEnvepisode[i][j] ='.';
+              }
+          }
+     }
+     mazeEnvepisode[start_row][start_col]= 's';
 }
 
 void mazeEnv_destroy(){

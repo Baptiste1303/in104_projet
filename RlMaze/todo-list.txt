@@ -4,13 +4,9 @@ Create a function which let us see action by action what's happening at a slow r
 
 Create Q function : init, reset, delete (free), add 
 store the coefficients in a .txt file 
-
+move the training area in a void function 
 
 
 OPTIONAL : 
 
 Generating new environments (maze) 
-
-
-
-ca marche pas
