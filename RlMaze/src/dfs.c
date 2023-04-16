@@ -31,6 +31,7 @@ int dfs(int row, int col){
 
 
 int main(){
+   srand(time(NULL));
    mazeEnv_make("../data/maze.txt");
    init_visited();
 

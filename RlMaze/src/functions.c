@@ -47,7 +47,6 @@ action q_update(action a, int state, int reward, int new_state){
 }
 
 action choose_action_epsillon_greedy(int state, double epsilon){
-        srand(time(NULL));
         double random_number = (double)rand() / RAND_MAX;
         action n = number_actions ;
 
