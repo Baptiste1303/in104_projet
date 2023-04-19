@@ -1,5 +1,6 @@
 #include "mazeEnv.h"
 #include "functions.h"
+#include "qlearning.h"
 
 char** mazeEnv;
 char** mazeEnvepisode;

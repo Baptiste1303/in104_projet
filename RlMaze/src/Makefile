@@ -2,9 +2,9 @@ CC=gcc
 CFLAGS=-Wall -Werror -I../include
 LDFLAGS=-L. 
 
-all: dfs.x
+all: qlearning.x
 
-dfs.x: dfs.o functions.o mazeEnv.o 
+qlearning.x: qlearning.o functions.o mazeEnv.o dfs.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 %.o : src/%.c
