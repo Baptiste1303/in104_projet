@@ -14,7 +14,7 @@ int state_col;
 int goal_row;
 int goal_col;
 
-
+//Allocation de la mémoire pour le labyrinthe
 void alloc_mazeEnv(){
      mazeEnv = malloc(rows * sizeof(char*));
 
@@ -23,6 +23,7 @@ void alloc_mazeEnv(){
      }
 }
 
+//Extraction des données du .txt et construction du labyrinthe
 void mazeEnv_make(char* file_name){
      char c;
      char rows_s[3] ={'\0'};
@@ -36,11 +37,12 @@ void mazeEnv_make(char* file_name){
         printf("Pointeur nul");
      }
 
+     //Récupération du nombre de lignes et colonnes
      if (file) {
          /* lire la premiere ligne avant EOF */
          while( (c=getc(file)) != EOF) {
                if(c== '\n'){
-                      break; // plutot boucler sur la fin de ligne ??
+                      break; // Pourquoi pas boucler sur la fin de la ligne ?
                } else if (c==',') {
                       swap = 1;
                } else if (!swap) {
@@ -58,18 +60,19 @@ void mazeEnv_make(char* file_name){
         return;
      }
 
-     /* convertir le string en nombre */
+     //convertir le string en nombre
      rows = atoi(rows_s);
      cols = atoi(cols_s);
 
      alloc_mazeEnv();
 
+     //Construction du labyrinthe
      for (int i=0; i<rows; i++){
          for (int j=0; j < cols; j++){
              c = getc(file);
 
-             if (c=='\n'){
-                 c = getc(file); // saut de ligne
+             if (c=='\n'){ // saut de ligne
+                c = getc(file); 
              } else if (c == 's'){
                start_row = i;
                start_col = j;
@@ -81,11 +84,10 @@ void mazeEnv_make(char* file_name){
              mazeEnv[i][j] = c;
          }
      }
-
      fclose(file);
 }
 
-
+//Affichage du labyrinthe
 void mazeEnv_render(){
      for (int i=0; i<rows; i++) {
          for (int j=0; j< cols; j++){
@@ -96,6 +98,7 @@ void mazeEnv_render(){
      printf("\n");
 }
 
+//Affiche le labyrinthe avec la position actuelle de l'agent en le modifiant 
 void mazeEnv_render_pos(){
      mazeEnv[state_row][state_col] = 'o'; 
      for (int i=0; i<rows; i++) {
@@ -107,6 +110,7 @@ void mazeEnv_render_pos(){
      printf("\n");
 }
 
+//Copie de l'original mazeEnv dans une autre variable mazeEnvepisode sur laquelle on va travailler à chaque épisode
 void mazeEnvepisode_init(){
     mazeEnvepisode = malloc(rows * sizeof(char*));
 
@@ -140,6 +144,7 @@ void mazeEnv_reset(){
     mazeEnvepisode_init();
 }
 
+/*Mise à jour du struct envOutput en fonction d'une action donnée*/
 envOutput mazeEnv_step(action a){
     int reward = 0;
     int done = 0;
@@ -159,18 +164,20 @@ envOutput mazeEnv_step(action a){
        temp_col = max(0,state_col -1);
     }
     
+    //Si on atteint l'objectif
     if((temp_row == goal_row) && (temp_col == goal_col)){
        reward = r[goal_row][goal_col];
        done   = 1;
     }
 
+    //Si on ne rencontre pas de mur
     if (mazeEnv[temp_row][temp_col] != '+'){
         state_col = temp_col ;
         state_row = temp_row ;
         reward = r[temp_row][temp_col];
     }
     else{
-        // Wall case, agent doesn't move
+        //Si on recontre un mur, l'agent ne bouge pas
         reward = -2 ;
     }
 
@@ -182,12 +189,13 @@ envOutput mazeEnv_step(action a){
    return stepOut;
 }
 
+//Choisi une action au hasard 
 action env_action_sample(){
   return (enum action)(rand() % number_actions);
 }
 
-void alloc_visited()
-{
+//Allocation de la mémoire pour un tableau des lieux visités
+void alloc_visited(){
         visited = malloc(rows * sizeof(int*));
         int i;
         for (i = 0; i < rows; ++i){
@@ -196,8 +204,7 @@ void alloc_visited()
 }
 
 
-void init_visited()
-{
+void init_visited() {
         alloc_visited();
 
         int i, j;
@@ -231,6 +238,7 @@ void add_crumbs(){
 }
 */
 
+//Enregistre le chemin choisi par l'agent dans mazeEnvepisode.
 void add_crumbs(){
      for (int i=0; i<rows; i++){
           for (int j=0; j<cols; j++){
