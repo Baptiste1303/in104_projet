@@ -1,7 +1,7 @@
 #include "functions.h"
 
-float alpha_value = 0.5 ; 
-float gamma_value = 0.5 ; 
+float alpha_value = 0.1 ; 
+float gamma_value = 0.1 ; 
 
 
 int** q;
