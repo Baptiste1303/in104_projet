@@ -28,7 +28,6 @@ int dfs(int row, int col){
     return 0;
 }
 
-
 /*
 int main(){
    mazeEnv_make("../data/maze.txt");

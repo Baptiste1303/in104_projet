@@ -162,24 +162,44 @@ envOutput mazeEnv_step(action a){
        temp_col = min(cols,state_col +1);
     }else if (a==left){
        temp_col = max(0,state_col -1);
+       temp_row = state_row;
     }
     
+    /* POUR VERIFICATIONS
+    printf("state_row : %d\n",state_row);
+    printf("state_col : %d\n",state_col);
+    printf("temp_row : %d\n",temp_row);
+    printf("temp_col : %d\n",temp_col);
+    printf(".%c. \n", mazeEnv[temp_row][temp_col]);
+    */
+
+    //SEULEMENT AVEC DFS
+    /* 
+    if((temp_row == goal_row) && (temp_col == goal_col)){
+       reward = 10000;
+       done   = 1;
+    }
+    */
+
+    //AVEC Q-LEARNING
     //Si on atteint l'objectif
     if((temp_row == goal_row) && (temp_col == goal_col)){
        reward = r[goal_row][goal_col];
        done   = 1;
+       printf("L'agent a atteint l'objectif");
     }
 
-    //Si on ne rencontre pas de mur
-    if (mazeEnv[temp_row][temp_col] != '+'){
+    //Si on recontre un mur, l'agent ne bouge pas
+    if (mazeEnv[temp_row][temp_col] == '+'){
+        reward = -2 ;
+        printf("L'agent n'a pas bougé\n");
+    } else { //Si on ne rencontre pas de mur
         state_col = temp_col ;
         state_row = temp_row ;
         reward = r[temp_row][temp_col];
+        printf("L'agent a bougé\n");
     }
-    else{
-        //Si on recontre un mur, l'agent ne bouge pas
-        reward = -2 ;
-    }
+    
 
     stepOut.reward = reward;
     stepOut.done   = done;
@@ -225,6 +245,7 @@ void update_visited(int col, int row){
     visited[col][row] = crumb ;
 }
 
+//SEULEMENT POUR DFS
 /*
 void add_crumbs(){
      for (int i=0; i<rows; i++){
@@ -238,6 +259,7 @@ void add_crumbs(){
 }
 */
 
+
 //Enregistre le chemin choisi par l'agent dans mazeEnvepisode.
 void add_crumbs(){
      for (int i=0; i<rows; i++){
@@ -248,6 +270,14 @@ void add_crumbs(){
           }
      }
      mazeEnvepisode[start_row][start_col]= 's';
+}
+
+void mazeEnvepisode_destroy(){
+    int i;
+    for (i = 0; i < rows; ++i){
+                free(mazeEnvepisode[i]);
+        }
+    free(mazeEnvepisode);
 }
 
 void mazeEnv_destroy(){

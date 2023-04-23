@@ -1,11 +1,13 @@
 #include "functions.h"
 
+/*
 float alpha_value = 0.1 ; 
 float gamma_value = 0.1 ; 
 
 
 int** q;
 int** r;
+
 
 void q_alloc(){
     q = malloc(rows * cols  * sizeof(double*));
@@ -107,7 +109,7 @@ void r_destroy(){
         }
     free(r);
 }
-
+*/
 
 int min(int a, int b){
     return (a>b) ? b : a;

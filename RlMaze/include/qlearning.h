@@ -15,13 +15,13 @@ void q_alloc();
 
 void q_init();
 
-int get_state(int col, int row);
+void q_destroy();
+
+int get_state();
 
 action q_update(action a, int state, int reward, int new_state);
 
 action choose_action_epsillon_greedy(int state, double epsillon);
-
-void q_destroy();
 
 void r_init();
 
