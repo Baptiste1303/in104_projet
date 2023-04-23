@@ -156,10 +156,13 @@ envOutput mazeEnv_step(action a){
     // cette partie traite les cas de bords 
     if (a==up){
        temp_row = max(0,state_row -1);
+       temp_col= state_col;
     }else if (a==down){
        temp_row = min(rows,state_row +1);
+       temp_col= state_col;
     }else if (a==right){
        temp_col = min(cols,state_col +1);
+       temp_row = state_row;
     }else if (a==left){
        temp_col = max(0,state_col -1);
        temp_row = state_row;
@@ -186,18 +189,18 @@ envOutput mazeEnv_step(action a){
     if((temp_row == goal_row) && (temp_col == goal_col)){
        reward = r[goal_row][goal_col];
        done   = 1;
-       printf("L'agent a atteint l'objectif");
+       //printf("L'agent a atteint l'objectif");
     }
 
     //Si on recontre un mur, l'agent ne bouge pas
     if (mazeEnv[temp_row][temp_col] == '+'){
         reward = -2 ;
-        printf("L'agent n'a pas bougé\n");
+        //printf("L'agent n'a pas bougé\n");
     } else { //Si on ne rencontre pas de mur
         state_col = temp_col ;
         state_row = temp_row ;
         reward = r[temp_row][temp_col];
-        printf("L'agent a bougé\n");
+        //printf("L'agent a bougé\n");
     }
     
 

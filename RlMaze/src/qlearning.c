@@ -2,7 +2,7 @@
 
 float alpha_value = 0.1 ; 
 float gamma_value = 0.9 ; 
-float epsilon = 0.5;
+float epsilon = 0.9;
 int nb_episodes = 1;
 
 
@@ -36,7 +36,7 @@ void q_destroy(){
 }
 
 int get_state(){
-        return (state_row*(cols+1)+state_col);
+        return (state_row*(cols)+state_col);
 }
 
 action q_update(action a, int state, int reward, int new_state){
@@ -60,19 +60,19 @@ action choose_action_epsillon_greedy(int state, double epsilon){
 
     if (random_number > epsilon) {
         // Exploitation: Choose the action with the highest Q-value for the current state
-        action best_action = 2;
-        double max_q_value = q[state][2];
+        action best_action = 0;
+        double max_q_value = q[state][0];
         for (int a = 0 ; a < (int)number_actions; a++) {
             if (q[state][a] > max_q_value) {
                 max_q_value = q[state][a];
                 best_action = a;
             }
         }
-        printf("L'action choisi est celui qui maximise Q \n");
+        //printf("L'action choisi est celui qui maximise Q \n");
         return best_action;
     } else {
         // Exploration: Choose a random action
-        printf("L'action choisi est au hasard\n");
+        //printf("L'action choisi est au hasard\n");
 
         return env_action_sample();
     }
@@ -88,18 +88,18 @@ void r_init(){
                 for (int j = 0; j < cols; ++j) {
                         //Pour un mur
                         if (mazeEnv[i][j] == '+') {
-                                r[i][j] = -2;
+                                r[i][j] = -100;
                         } 
                         //Pour le goal
                         else if (mazeEnv[i][j] == 'g') {
-                                r[i][j] = 100;
+                                r[i][j] = 1000;
                         } 
                         //Pour le départ
                         else if (mazeEnv[i][j] == 's') {
-                                r[i][j] = -1;
+                                r[i][j] = -10;
                         } 
                         else {
-                                r[i][j] = 5;
+                                r[i][j] = 50;
                         }
                 // printf("La récompense de la case (%d,%d) est : %d \n" ,i,j,r[0][21]); 
                 }
@@ -157,15 +157,17 @@ int main(){
         //Show current position of the agent
         mazeEnvepisode_render_pos();
 
-/*
         while(new_state_env.done != 1){
 
-            state = get_state(state_col, start_row);
-            state_action = choose_action_epsillon_greedy(state, 0.5);
+            state = get_state();
+            state_action = choose_action_epsillon_greedy(state, epsilon);
+            printf("Action choisie : %d\n",(int)state_action);
 
-            envOutput new_state_env ; 
+            //envOutput new_state_env ; 
             new_state_env = mazeEnv_step(state_action);
-            new_state = get_state(new_state_env.new_col, new_state_env.new_row);
+
+            new_state = get_state();
+            printf("State3 : %d\n", new_state);
             //new_action = q_update(state_action, state, new_state_env.reward, new_state);
 
             state = new_state ;
@@ -173,11 +175,12 @@ int main(){
 
             //update_visited(new_state_env.new_col, new_state_env.new_row);
             mazeEnvepisode_render_pos();
-
+        
         }
         
+        mazeEnvepisode_render_pos();
         add_crumbs();
-        */
+        
     }
     
 
