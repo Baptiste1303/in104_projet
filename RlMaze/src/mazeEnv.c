@@ -111,13 +111,16 @@ void mazeEnv_render_pos(){
 }
 
 //Copie de l'original mazeEnv dans une autre variable mazeEnvepisode sur laquelle on va travailler à chaque épisode
-void mazeEnvepisode_init(){
-    mazeEnvepisode = malloc(rows * sizeof(char*));
+void alloc_mazeEnvepisode(){
+        mazeEnvepisode = malloc(rows * sizeof(char*));
 
      for(int i=0; i<rows; i++) {
-         mazeEnvepisode[i] = malloc(cols * sizeof(char*));
+        mazeEnvepisode[i] = malloc(cols * sizeof(char*));
      }
+}
 
+void mazeEnvepisode_init(){
+    alloc_mazeEnvepisode();
      for (int i = 0 ; i < rows ; i++){
         for (int j = 0 ; j < cols ; j++){
             mazeEnvepisode[i][j] = mazeEnv[i][j];
@@ -194,7 +197,7 @@ envOutput mazeEnv_step(action a){
 
     //Si on recontre un mur, l'agent ne bouge pas
     if (mazeEnv[temp_row][temp_col] == '+'){
-        reward = -2 ;
+        reward = r[temp_row][temp_col];
         //printf("L'agent n'a pas bougé\n");
     } else { //Si on ne rencontre pas de mur
         state_col = temp_col ;
@@ -226,22 +229,21 @@ void alloc_visited(){
         }
 }
 
-
 void init_visited() {
-        alloc_visited();
+    alloc_visited();
 
-        int i, j;
-        for (i = 0; i < rows; ++i) {
-                for (j = 0; j < cols; ++j) {
-                        if (mazeEnv[i][j] == '+') {
-                                visited[i][j] = wall;
-                        } else if (mazeEnv[i][j] == 'g') {
-                                visited[i][j] = goal;
-                        } else {
-                                visited[i][j] = unknown;
-                        }
-                }
+    int i, j;
+    for (i = 0; i < rows; ++i) {
+        for (j = 0; j < cols; ++j) {
+            if (mazeEnv[i][j] == '+') {
+                    visited[i][j] = wall;
+            } else if (mazeEnv[i][j] == 'g') {
+                    visited[i][j] = goal;
+            } else {
+                    visited[i][j] = unknown;
+            }
         }
+    }
 }
 
 void update_visited(int col, int row){
@@ -275,6 +277,8 @@ void add_crumbs(){
      mazeEnvepisode[start_row][start_col]= 's';
 }
 
+
+
 void mazeEnvepisode_destroy(){
     int i;
     for (i = 0; i < rows; ++i){
@@ -282,6 +286,7 @@ void mazeEnvepisode_destroy(){
         }
     free(mazeEnvepisode);
 }
+
 
 void mazeEnv_destroy(){
     int i;

@@ -8,8 +8,8 @@
 extern float alpha_value; // learning rate 
 extern float gamma_value; // discount factor (importance given to future rewards compared to immediate rewards)
 
-extern int** q;
-extern int** r;
+extern double** q;
+extern double** r;
 
 void q_alloc();
 

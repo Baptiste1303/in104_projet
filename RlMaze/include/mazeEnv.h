@@ -52,6 +52,8 @@ void mazeEnv_render();
 
 void mazeEnv_render_pos();
 
+void alloc_mazeEnvepisode();
+
 void mazeEnvepisode_init();
 
 void mazeEnvepisode_render_pos();
@@ -69,6 +71,8 @@ void init_visited();
 void update_visited(int col, int row);
 
 void add_crumbs();
+
+void mazeEnvepisode_destroy();
 
 void mazeEnv_destroy();
 
