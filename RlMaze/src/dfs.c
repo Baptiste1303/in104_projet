@@ -33,7 +33,7 @@ int main(){
    mazeEnv_make("../data/maze.txt");
    init_visited();
 
-   printf("%d, %d \n", rows, cols);
+   printf("rows=%d, cols=%d \n", rows, cols);
    printf("number of actions :  %d \n", number_actions); 
    mazeEnv_render();
    dfs(start_row,start_col);
