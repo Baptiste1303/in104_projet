@@ -13,7 +13,7 @@ Ces algorithmes sont :
 * Q-Learning, code disponible dans [qlearning.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/qlearning.c)
 * SARSA, code disponible prochainement.
 
-Dans un premier temps l'objectif est de résoudre le déplacement dans un labyrinthe. Ce dernier est donné dans le fichier [maze.txt](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/data/maze.txt) comportant un départ, un objectif, des cases murs et des cases vides sur lesquelles l'agent peut se déplacer.
+Dans un premier temps l'objectif est de résoudre le déplacement d'un agent dans un labyrinthe.
 
 Dans un second temps, l'objectif est d'étendre ces algorithmes à d'autres types d'environnements.
 
@@ -23,12 +23,12 @@ Nous avons travaillé à partir d'une base [RlMaze](https://github.com/nguyensao
 
 Le projet comporte deux Makefile permettant d'éxécuter le projet. 
 
-* Le premier **Makefile** permet de créer un éxécutable **dfs.x** en éxécutant la commande ``commande``, qui :
+Le premier **Makefile** permet de créer un éxécutable **dfs.x** en éxécutant la commande ``commande``, qui :
 - affiche le labyrinthe
 - effectue le parcours en profondeur
 - affiche le labyrinthe avec les cases par lesquelles est passé l'agent
 
-* Le second **Makefile** permet de créer un éxécutable **qlearning.x**, en éxécutant la commande ``commande``, qui :
+Le second **Makefile** permet de créer un éxécutable **qlearning.x**, en éxécutant la commande ``commande``, qui :
 - affiche le labyrinthe
 - effectue l'algorithme Q-Learning avec la règle epsilon-greedy 
 - affiche l'action préférentielle dans chaque case où l'agent peut se trouver [à faire]
@@ -36,3 +36,11 @@ Le projet comporte deux Makefile permettant d'éxécuter le projet.
 
 ### Difficultés rencontrées et état d'avancement
 
+Les principales difficultés rencontrés sont :
+
+* Difficulés sur l'actuélisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérérée et corrigée, liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
+* Problèmes liés aux choix des coefficients de recompenses qui induisent dans certains cas des problèmes de convergence. En effet, leurs choix est compliqués car ils sont en partie aléatoires. [non réglé]
+
+L'algorithme [qlearning.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/qlearning.c) ainsi que les **Makefiles** sont fonctionnels. Cependant nous rencontrons un problème avec la fonction *update_visited(state_col,state_row)* qui induit un segementation fault.
+
+Les autres algorithmes d'apprentissage par renforcement n'ont pas encore été implémentés.
