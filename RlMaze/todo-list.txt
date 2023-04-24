@@ -1,11 +1,10 @@
 #### TO DO LIST ####
 
-Create a function which let us see action by action what's happening at a slow rate 
-
-Create Q function : init, reset, delete (free), add 
-store the coefficients in a .txt file 
-move the training area in a void function 
-
+Makefile : 1 makefile pour dfs et 1 pour le q learning 
+Readame 
+Jouer sur le param episslon a chaque épisode (fonction affine décroissante)
+gérer le bug sur crumn/visited
+Créer une grille qui affiche pour chaque état, l'action maximisant Q et l'afficher avec la direction (flèche)
 
 OPTIONAL : 
 
