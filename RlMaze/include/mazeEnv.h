@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 extern char** mazeEnv;
-extern char** mazeEnvepisode;
+//extern char** mazeEnvepisode;
 extern int** visited;
 extern int rows;
 extern int cols;
@@ -52,11 +52,11 @@ void mazeEnv_render();
 
 void mazeEnv_render_pos();
 
-void alloc_mazeEnvepisode();
+//void alloc_mazeEnvepisode();
 
-void mazeEnvepisode_init();
+//void mazeEnvepisode_init();
 
-void mazeEnvepisode_render_pos();
+//void mazeEnvepisode_render_pos();
 
 void mazeEnv_reset();
 
@@ -72,7 +72,7 @@ void update_visited(int col, int row);
 
 void add_crumbs();
 
-void mazeEnvepisode_destroy();
+//void mazeEnvepisode_destroy();
 
 void mazeEnv_destroy();
 

@@ -5,8 +5,10 @@
 #include <time.h>
 #include <mazeEnv.h>
 
-extern float alpha_value; // learning rate 
-extern float gamma_value; // discount factor (importance given to future rewards compared to immediate rewards)
+extern float alpha_value; 
+extern float gamma_value; 
+extern int nb_episodes;
+
 
 extern double** q;
 extern double** r;
@@ -19,6 +21,8 @@ void q_destroy();
 
 int get_state();
 
+action best_action(int state, double *max_val);
+
 action q_update(action a, int state, int reward, int new_state);
 
 action choose_action_epsillon_greedy(int state, double epsillon);
@@ -26,6 +30,8 @@ action choose_action_epsillon_greedy(int state, double epsillon);
 void r_init();
 
 void r_destroy();
+
+void mazeEnv_render_preferential_action();
 
 
 #endif

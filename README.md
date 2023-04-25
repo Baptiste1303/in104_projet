@@ -3,8 +3,8 @@
 ## README
 
 Ce projet a été réalisé par :
-* MARTEL Baptiste [@Baptiste_1303](https://github.com/Baptiste1303)
-* CHEN Marc [@Kemar8](https://github.com/Kemar8)
+* MARTEL Baptiste _alias_ [@Baptiste_1303](https://github.com/Baptiste1303)
+* CHEN Marc _alias_ [@Kemar8](https://github.com/Kemar8)
 
 ### Présentation du projet
 
@@ -36,7 +36,7 @@ Le second **Makefile** permet de créer un éxécutable **qlearning.x**, en éx�
 
 ### Difficultés rencontrées et état d'avancement
 
-Les principales difficultés rencontrés sont :
+Les principales difficultés rencontrées sont :
 
 * Difficulés sur l'actuélisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérérée et corrigée, liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
 * Problèmes liés aux choix des coefficients de recompenses qui induisent dans certains cas des problèmes de convergence. En effet, leurs choix est compliqués car ils sont en partie aléatoires. [non réglé]

@@ -1,23 +1,22 @@
 #include "qlearning.h"
 
-float alpha_value = 0.1 ; 
-float gamma_value = 0.7 ; 
-float epsilon = 0.9;
-int nb_episodes = 1;
-
+float alpha_value = 0.1 ; // learning rate 
+float gamma_value = 0.9 ; // discount factor (importance given to future rewards compared to immediate rewards)
+int nb_episodes = 500;
 
 double** q;
 double** r;
 
 //Table Q for state-action values
 void q_alloc(){
-    q = malloc(rows * cols  * sizeof(double*));
-    action a = number_actions ;
+        q = malloc(rows * cols  * sizeof(double*));
+        action a = number_actions ;
         for (int i = 0; i < rows * cols ; ++i){
                 q[i] = malloc((int)a * sizeof(double));
         }
 }
 
+//We choose to initialize Q as a zero-filled array
 void q_init(){
         action a = number_actions ;
         q_alloc();
@@ -28,72 +27,77 @@ void q_init(){
         } 
 }
 
+//Free the memory allocated for q 
 void q_destroy(){
-    for (int i = 0; i < rows * cols ; ++i){
+        for (int i = 0; i < rows * cols ; ++i){
                 free(q[i]);
         }
-    free(q);
+        free(q);
 }
 
+//Return the current position of the agent using the global variables state_row and state_col
 int get_state(){
         return (state_row*(cols)+state_col);
 }
 
-action q_update(action a, int state, int reward, int new_state){
-        // return the action that maximize Q
-
+//Return the best action and its value in Q for a given state
+action best_action(int state, double *max_val){
         int action_index = 3 ;
-        double max_val = q[new_state][3];
+        *max_val = q[state][3]; //Passed by reference
 
         for (int i = 0; i < number_actions; i++) {
-                if (q[new_state][i] > max_val) {
-                max_val = q[new_state][i];
+                if (q[state][i] > *max_val) {
+                *max_val = q[state][i];
                 action_index = i ;
                 }
         }
-        q[state][a] = q[state][a] + alpha_value * (reward + gamma_value * max_val - q[state][a]);
         return (enum action) action_index;
 }
 
-action choose_action_epsillon_greedy(int state, double epsilon){
-        double random_number = (double)rand() / RAND_MAX;
+//Update the Q-table
+action q_update(action a, int state, int reward, int new_state){
+        // return the action that maximize Q
+        double max_val;
+        action b_action=best_action(new_state, &max_val);
 
-    if (random_number > epsilon) {
-        // Exploitation: Choose the action with the highest Q-value for the current state
-        action best_action = 0;
-        double max_q_value = q[state][0];
-        for (int a = 0 ; a < (int)number_actions; a++) {
-            if (q[state][a] > max_q_value) {
-                max_q_value = q[state][a];
-                best_action = a;
-            }
-        }
-        //printf("L'action choisi est celui qui maximise Q \n");
-        return best_action;
-    } else {
-        // Exploration: Choose a random action
-        //printf("L'action choisi est au hasard\n");
-        return env_action_sample();
-    }
-
+        q[state][a] = q[state][a] + alpha_value * (reward + gamma_value * max_val - q[state][a]);
+        return b_action;
 }
 
+// Choose the next action to take using an epsilon-greedy policy
+action choose_action_epsillon_greedy(int state, double epsilon){
+        //Generate a random number between 0 and 1
+        double random_number = (double)rand() / RAND_MAX;
+
+        if (random_number > epsilon) {
+        // Exploitation: Choose the action with the highest Q-value for the current state
+        double unused;
+        action b_action=best_action(state, &unused);
+        return b_action;
+        } else {
+        // Exploration: Choose a random action
+        return env_action_sample();
+        }
+}
+
+// Initialisation of the table that groups rewards based on the elements of the maze
 void r_init(){
-    r = malloc(rows * sizeof(int*));
+        r = malloc(rows * sizeof(int*));
         for (int i = 0; i < rows; ++i){
                 r[i] = malloc(cols * sizeof(int*));
         }
+
         for (int i = 0; i < rows; ++i) {
                 for (int j = 0; j < cols; ++j) {
-                        //Pour un mur
+                        //For a wall
                         if (mazeEnv[i][j] == '+') {
                                 r[i][j] = -100;
                         } 
-                        //Pour le goal
+                        //For the goal
                         else if (mazeEnv[i][j] == 'g') {
-                                r[i][j] = 1000;
+                                r[i][j] = 10000;
                         } 
-                        //Pour le départ
+                        //For the start
                         else if (mazeEnv[i][j] == 's') {
                                 r[i][j] = -50;
                         } 
@@ -104,49 +108,79 @@ void r_init(){
         }
 }
 
+//Free the memory allocated for r
 void r_destroy(){
-    int i;
-    for (i = 0; i < rows; ++i){
+    for (int i = 0; i < rows; ++i){
                 free(r[i]);
         }
     free(r);
 }
 
+//Display the maze with the action that has the maximum reward for each reachable cell in the environment
+void mazeEnv_render_preferential_action(){
+        int state;
+        int b_action;
+        double unused;
+        for (int i=0; i<rows; i++) {
+                for (int j=0; j< cols; j++){
+                        if (mazeEnv[i][j] == '+'){
+                                printf("%c ", mazeEnv[i][j]);
+                        } else {
+                                state=i*cols+j;
+                                b_action=(int)best_action(state, &unused);
+                                if (b_action==0){
+                                        printf("ᴧ ");
+                                } else if (b_action==1) {
+                                        printf("v ");
+                                } else if (b_action==2) {
+                                        printf("< ");
+                                } else {
+                                        printf("> ");
+                                }
+                        }
+                }
+                printf("\n");
+        }
+        printf("\n");
+}
+
+
 int main(){
-    srand(time(NULL));
-    mazeEnv_make("../data/maze.txt");
-    init_visited();
+        //Initialize the random number generator
+        srand(time(0));
 
-    printf("%d, %d \n", rows, cols);
-    printf("number of actions :  %d \n", number_actions); 
-    mazeEnv_render();
+        mazeEnv_make("../data/maze.txt");
+        //init_visited(); -> Non-functional
 
-    q_init();
-    r_init();
-    
-    action state_action ;
-    action new_action ;
-    int state;
-    int new_state;
-int i=0;
+        printf("rows=%d, cols=%d \n", rows, cols);
+        printf("number of actions :  %d \n", number_actions); 
+        mazeEnv_render();
+
+        q_init();
+        r_init();
         
-    for (int episode = 0 ; episode < nb_episodes ; ++episode){
+        action state_action ;
+        action new_action ;
+        int state;
+        int new_state;
 
-        // Maze reset & initialisation
+        float epsilon = 0.9;
+        float epsilon_decay = 0.01;
+        float epsilon_end=0.01;
+        
+        for (int episode = 0 ; episode < nb_episodes ; ++episode){
+
+        // Maze reset
         mazeEnv_reset();
         state = get_state();
-        //printf("State1 : %d\n", state);
         
         // Chosing action
-        
         state_action = choose_action_epsillon_greedy(state, epsilon);
-        //printf("Action choisie : %d\n",(int)state_action);
         
+        // Get reward & new state
         envOutput new_state_env ; 
         new_state_env=mazeEnv_step(state_action);
-
         new_state = get_state();
-        //printf("State2 : %d\n", new_state);
 
         new_action = q_update(state_action, state, new_state_env.reward, new_state);
        
@@ -154,43 +188,29 @@ int i=0;
         state = new_state ;
         state_action = new_action ;
 
-        update_visited(state_col,state_row);
-
-        //Show current position of the agent
-        mazeEnvepisode_render_pos();
+        //update_visited(state_col,state_row);
         
         while(new_state_env.done != 1){
-            //Compteur 
-            i=i+1;
+                state = get_state();
+                state_action = choose_action_epsillon_greedy(state, epsilon);
 
-            state = get_state();
-            state_action = choose_action_epsillon_greedy(state, epsilon);
-            //printf("Action choisie : %d\n",(int)state_action);
+                new_state_env = mazeEnv_step(state_action);
 
-            new_state_env = mazeEnv_step(state_action);
+                new_state = get_state();
+                new_action = q_update(state_action, state, new_state_env.reward, new_state);
 
-            new_state = get_state();
-            //printf("State3 : %d\n", new_state);
-            new_action = q_update(state_action, state, new_state_env.reward, new_state);
+                state = new_state ;
+                state_action = new_action ;
 
-            state = new_state ;
-            state_action = new_action ;
-
-            //update_visited(state_col,state_row); -> segmentation fault
-            //mazeEnvepisode_render_pos();
-        
+                //update_visited(state_col,state_row); -> segmentation fault
         }
-        
-        
-        //add_crumbs();
-   
-    }
-    
+        // reduce the exploration rate epsilon over time & ensure that the exploration rate does not go below the final rate
+        epsilon=(epsilon>epsilon-epsilon_decay) ? epsilon : epsilon_end;
 
-    mazeEnv_destroy();
-    visited_destroy();
-        
-        //Affichage des valeurs de Q : en faire une fonction qui exporte en .txt
+        //add_crumbs();
+        }
+
+        //Displaying Q-values
         for (int i = 0; i < rows * cols ; ++i) {
                 printf("%d : ",i);
                 for (int j = 0; j < number_actions; ++j) {
@@ -199,14 +219,13 @@ int i=0;
                 printf("\n");
         }
 
-    mazeEnvepisode_render_pos();
+        mazeEnv_render_preferential_action();
 
-    printf("Nombre d'itérations=%d\n",i);
+        q_destroy();
+        r_destroy();
 
-    q_destroy();
-    r_destroy();
-    mazeEnvepisode_destroy();
-        
+        mazeEnv_destroy();
+        //visited_destroy();
 
-    return 0 ;
+        return 0 ;
 }

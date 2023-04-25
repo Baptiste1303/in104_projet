@@ -1,10 +1,10 @@
 #### TO DO LIST ####
 
-Create a function which let us see action by action what's happening at a slow rate 
+- Finir les makefiles : faire en sorte que dfs et qlearning puissent être compilés en même temps.
+- Mettre à jour le README.md
+- Créer une fonction qui enregistre les coeffs finaux de Q dans un .txt
 
-Create Q function : init, reset, delete (free), add 
-store the coefficients in a .txt file 
-move the training area in a void function 
+-move the training area in a void function 
 
 
 OPTIONAL : 
