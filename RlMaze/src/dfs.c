@@ -28,7 +28,7 @@ int dfs(int row, int col){
     return 0;
 }
 
-/*
+
 int main(){
    mazeEnv_make("../data/maze.txt");
    init_visited();
@@ -41,4 +41,4 @@ int main(){
    mazeEnv_render();
    return 0;
 }
-*/
+

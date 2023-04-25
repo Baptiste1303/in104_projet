@@ -108,8 +108,14 @@ void r_init(){
         }
 }
 
-int get_reward(int i, int j){
-        return (r[i][j]);
+int get_reward(int wall){
+        if (wall == 1){
+                return(r[0][0]);
+        }
+        else{
+                return (r[state_row][state_col]);
+        }
+        
 }
 
 //Free the memory allocated for r
@@ -186,6 +192,8 @@ int main(){
         action new_action ;
         int state;
         int new_state;
+        int reward;
+        int wall;
 
         float epsilon = 0.9;
         float epsilon_decay = 0.01;
@@ -203,9 +211,11 @@ int main(){
         // Get reward & new state
         envOutput new_state_env ; 
         new_state_env=mazeEnv_step(state_action);
+        wall = new_state_env.wall ;
         new_state = get_state();
+        reward = get_reward(wall);
 
-        new_action = q_update(state_action, state, new_state_env.reward, new_state);
+        new_action = q_update(state_action, state,reward, new_state);
        
         // Update state and action
         state = new_state ;
@@ -220,7 +230,9 @@ int main(){
                 new_state_env = mazeEnv_step(state_action);
 
                 new_state = get_state();
-                new_action = q_update(state_action, state, new_state_env.reward, new_state);
+                wall = new_state_env.wall ;
+                reward = get_reward(wall);
+                new_action = q_update(state_action, state, reward, new_state);
 
                 state = new_state ;
                 state_action = new_action ;

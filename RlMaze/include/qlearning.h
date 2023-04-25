@@ -29,6 +29,8 @@ action choose_action_epsillon_greedy(int state, double epsillon);
 
 void r_init();
 
+int get_reward(int wall);
+
 void r_destroy();
 
 void mazeEnv_render_preferential_action();

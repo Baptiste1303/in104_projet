@@ -153,7 +153,7 @@ void mazeEnv_reset(){
 
 /*Mise à jour du struct envOutput en fonction d'une action donnée*/
 envOutput mazeEnv_step(action a){
-    int reward = 0;
+    int wall = 0;
     int done = 0;
     envOutput stepOut;
 
@@ -175,31 +175,29 @@ envOutput mazeEnv_step(action a){
        temp_row = state_row;
     }
 
-    //SEULEMENT AVEC DFS
-    /* 
-    if((temp_row == goal_row) && (temp_col == goal_col)){
-       reward = 10000;
-       done   = 1;
-    }
-    */
-
-    //AVEC Q-LEARNING
     //Si on atteint l'objectif
+
     if((temp_row == goal_row) && (temp_col == goal_col)){
-       reward = r[goal_row][goal_col];
-       done   = 1;
+       done = 1 ;
     }
 
     //Si on recontre un mur, l'agent ne bouge pas
-    if (mazeEnv[temp_row][temp_col] == '+'){
-        reward = r[temp_row][temp_col];
-    } else { //Si on ne rencontre pas de mur
-        state_col = temp_col ;
-        state_row = temp_row ;
-        reward = r[temp_row][temp_col];
-    }
-    
-    stepOut.reward = reward;
+
+    // L'algorithme a été construit de manière a ce qu'on puisse compiler dfs et qlearning
+    // Nous avons donc trouvé une solution alternative pour ne pas faire appel à la variable r qui empechait la compilation de dfs
+
+    if (mazeEnv[temp_row][temp_col] != '+'){
+            //Si on ne rencontre pas de mur
+            state_col = temp_col ;
+            state_row = temp_row ;
+        } 
+    else{
+            wall = 1;
+            
+        }
+
+
+    stepOut.wall = wall;
     stepOut.done   = done;
     stepOut.new_col = state_col;
     stepOut.new_row = state_row; 

@@ -37,7 +37,7 @@ typedef enum action action ;
 struct envOutput{
   int new_col;
   int new_row;
-  int reward;
+  int wall;
   int done;
 
 };
