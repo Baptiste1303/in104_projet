@@ -17,7 +17,7 @@ Dans un premier temps l'objectif est de résoudre le déplacement d'un agent dan
 
 Dans un second temps, l'objectif est d'étendre ces algorithmes à d'autres types d'environnements.
 
-Nous avons travaillé à partir d'une base [RlMaze](https://github.com/nguyensaomai/RlMaze) fournie par [@nguyensaomai](https://github.com/nguyensaomai) comportant l'aquisition du labyrinthe ainsi qu'une fonction [dfs.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/dfs.c) de recherche en profondeur.
+Nous avons travaillé à partir d'une base [RlMaze](https://github.com/nguyensaomai/RlMaze) fournie par [@nguyensaomai](https://github.com/nguyensaomai) comportant l'aquisition du labyrinthe ainsi qu'une fonction [dfs.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/dfs.c) de recherche en profondeur dans le but de résoudre le labyrinthe.
 
 ### Comment exécuter le projet ?
 
@@ -38,7 +38,7 @@ Le second **Makefile** permet de créer un éxécutable **qlearning.x**, en éx�
 
 Les principales difficultés rencontrées sont :
 
-* Difficulés sur l'actuélisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérée et corrigée, elle était liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
+* Difficultés sur l'actuéalisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérée et corrigée, elle était liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
 * Problèmes liés aux choix des coefficients de recompenses qui induisent dans certains cas des problèmes de convergence. En effet, leurs choix est compliqués car ils sont en partie aléatoires. [réglé]
 *L'utilisation de la fonction *update_visited(state_col,state_row)* induit un segmentation fault [non réglé]
 
