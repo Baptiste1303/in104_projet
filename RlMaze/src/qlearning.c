@@ -108,6 +108,10 @@ void r_init(){
         }
 }
 
+int get_reward(int i, int j){
+        return (r[i][j]);
+}
+
 //Free the memory allocated for r
 void r_destroy(){
     for (int i = 0; i < rows; ++i){
@@ -147,7 +151,7 @@ void mazeEnv_render_preferential_action(){
 //Saving the q-values to q_values.txt
 void extract_q_values(){
         FILE* fp;
-        fp = fopen("q_values.txt", "w");
+        fp = fopen("../data/q_values.txt", "w");
         if (fp == NULL) {
                 printf("Erreur : Impossible d'ouvrir le fichier.\n");
                 return ;
