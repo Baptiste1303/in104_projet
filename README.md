@@ -23,14 +23,14 @@ Nous avons travaillé à partir d'une base [RlMaze](https://github.com/nguyensao
 
 Le projet comporte un [Makefile](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/Makefile) permettant d'éxécuter le mode d'exploration souhaité pour le labyrinthe.
 
-* Pour résoudre le labyrinthe grâce à la recherche en profonceur :
+Pour résoudre le labyrinthe grâce à la recherche en profonceur :
 Rentrer la commande ``make dfs.x`` pour générer un exécutable.
 En l'excutant grâce à ``./dfs.x`` cela :
 - affiche le labyrinthe
 - effectue le parcours en profondeur
 - affiche le labyrinthe avec les cases par lesquelles est passé l'agent
 
-* Pour résoudre le labyrinthe grâce a l'algorithme Q-Learning :
+Pour résoudre le labyrinthe grâce a l'algorithme Q-Learning :
 Rentrer la commande ``make`` pour générer un exécutable
 En l'excutant grâce à ``./qlearning.x`` cela :
 - affiche le labyrinthe
