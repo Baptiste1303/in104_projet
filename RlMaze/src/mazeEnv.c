@@ -3,7 +3,7 @@
 #include "qlearning.h"
 
 char** mazeEnv;
-char** mazeEnvepisode;
+//char** mazeEnvepisode;
 int** visited;
 int rows;
 int cols;
@@ -14,7 +14,7 @@ int state_col;
 int goal_row;
 int goal_col;
 
-//Allocation de la mémoire pour le labyrinthe
+//Allocation de la mémoire pour le labyrinthe implémenté sous la forme d'un tableau de caractères
 void alloc_mazeEnv(){
      mazeEnv = malloc(rows * sizeof(char*));
 
@@ -98,18 +98,21 @@ void mazeEnv_render(){
      printf("\n");
 }
 
-//Affiche le labyrinthe avec la position actuelle de l'agent en le modifiant 
+//Affiche le labyrinthe avec la position actuelle de l'agent sans le modifier 
 void mazeEnv_render_pos(){
-     mazeEnv[state_row][state_col] = 'o'; 
-     for (int i=0; i<rows; i++) {
-         for (int j=0; j< cols; j++){
-             printf("%c ", mazeEnv[i][j]);
-         }
-         printf("\n");
-     }
-     printf("\n");
+    char c = mazeEnv[state_row][state_col];
+    mazeEnv[state_row][state_col] = 'o'; 
+    for (int i=0; i<rows; i++) {
+        for (int j=0; j< cols; j++){
+            printf("%c ", mazeEnv[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    mazeEnv[state_row][state_col] = c;
 }
 
+/*
 //Copie de l'original mazeEnv dans une autre variable mazeEnvepisode sur laquelle on va travailler à chaque épisode
 void alloc_mazeEnvepisode(){
         mazeEnvepisode = malloc(rows * sizeof(char*));
@@ -138,13 +141,14 @@ void mazeEnvepisode_render_pos(){
      }
      printf("\n");
 }
+*/
 
 void mazeEnv_reset(){
-     state_row = start_row;
-     state_col = start_col;
+    state_row = start_row;
+    state_col = start_col;
 
-    // Recreate original maze because crumbs can replace wall 
-    mazeEnvepisode_init();
+    //Recreate original maze because crumbs can replace wall 
+    //mazeEnvepisode_init();
 }
 
 /*Mise à jour du struct envOutput en fonction d'une action donnée*/
@@ -170,14 +174,6 @@ envOutput mazeEnv_step(action a){
        temp_col = max(0,state_col -1);
        temp_row = state_row;
     }
-    
-    /* POUR VERIFICATIONS
-    printf("state_row : %d\n",state_row);
-    printf("state_col : %d\n",state_col);
-    printf("temp_row : %d\n",temp_row);
-    printf("temp_col : %d\n",temp_col);
-    printf(".%c. \n", mazeEnv[temp_row][temp_col]);
-    */
 
     //SEULEMENT AVEC DFS
     /* 
@@ -192,21 +188,17 @@ envOutput mazeEnv_step(action a){
     if((temp_row == goal_row) && (temp_col == goal_col)){
        reward = r[goal_row][goal_col];
        done   = 1;
-       //printf("L'agent a atteint l'objectif");
     }
 
     //Si on recontre un mur, l'agent ne bouge pas
     if (mazeEnv[temp_row][temp_col] == '+'){
         reward = r[temp_row][temp_col];
-        //printf("L'agent n'a pas bougé\n");
     } else { //Si on ne rencontre pas de mur
         state_col = temp_col ;
         state_row = temp_row ;
         reward = r[temp_row][temp_col];
-        //printf("L'agent a bougé\n");
     }
     
-
     stepOut.reward = reward;
     stepOut.done   = done;
     stepOut.new_col = state_col;
@@ -223,8 +215,8 @@ action env_action_sample(){
 //Allocation de la mémoire pour un tableau des lieux visités
 void alloc_visited(){
         visited = malloc(rows * sizeof(int*));
-        int i;
-        for (i = 0; i < rows; ++i){
+
+        for (int i = 0; i < rows; ++i){
                 visited[i] = malloc(cols * sizeof(int*));
         }
 }
@@ -246,25 +238,24 @@ void init_visited() {
     }
 }
 
+//A REVOIR
 void update_visited(int col, int row){
     visited[col][row] = crumb ;
 }
 
-//SEULEMENT POUR DFS
-/*
 void add_crumbs(){
      for (int i=0; i<rows; i++){
           for (int j=0; j<cols; j++){
-              if (visited[i][j] ==crumb){
+              if (visited[i][j] == crumb){
                   mazeEnv[i][j] ='.';
               }
           }
      }
      mazeEnv[start_row][start_col]= 's';
 }
-*/
 
 
+/*
 //Enregistre le chemin choisi par l'agent dans mazeEnvepisode.
 void add_crumbs(){
      for (int i=0; i<rows; i++){
@@ -276,9 +267,9 @@ void add_crumbs(){
      }
      mazeEnvepisode[start_row][start_col]= 's';
 }
+*/
 
-
-
+/*
 void mazeEnvepisode_destroy(){
     int i;
     for (i = 0; i < rows; ++i){
@@ -286,7 +277,7 @@ void mazeEnvepisode_destroy(){
         }
     free(mazeEnvepisode);
 }
-
+*/
 
 void mazeEnv_destroy(){
     int i;

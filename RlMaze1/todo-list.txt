@@ -1,3 +1,0 @@
-### TO-DO LIST ###
-
-- Créer fonction auxiliaire pour generer un .txt des coefficients Q apres entrainements 
