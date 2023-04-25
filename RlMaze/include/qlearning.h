@@ -33,5 +33,7 @@ void r_destroy();
 
 void mazeEnv_render_preferential_action();
 
+void extract_q_values();
+
 
 #endif

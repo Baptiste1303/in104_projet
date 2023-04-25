@@ -144,6 +144,25 @@ void mazeEnv_render_preferential_action(){
         printf("\n");
 }
 
+//Saving the q-values to q_values.txt
+void extract_q_values(){
+        FILE* fp;
+        fp = fopen("q_values.txt", "w");
+        if (fp == NULL) {
+                printf("Erreur : Impossible d'ouvrir le fichier.\n");
+                return ;
+        }
+
+        fprintf(fp, "Case |    up    |   down   |  left  |  right\n");
+        for (int i = 0; i < rows * cols ; ++i) {
+                fprintf(fp, "%4d : ", i);
+                for (int j = 0; j < number_actions; ++j) {
+                        fprintf(fp, "%8.2f, ", q[i][j]) ; 
+                }
+                fprintf(fp, "\n");
+        }
+        fclose(fp);
+}
 
 int main(){
         //Initialize the random number generator
@@ -210,17 +229,13 @@ int main(){
         //add_crumbs();
         }
 
-        //Displaying Q-values
-        for (int i = 0; i < rows * cols ; ++i) {
-                printf("%d : ",i);
-                for (int j = 0; j < number_actions; ++j) {
-                        printf("%.2f, ", q[i][j]) ; 
-                }
-                printf("\n");
-        }
+        //Saving the q-values to q_values.txt
+        extract_q_values();
 
+        //Display the maze with the action that has the maximum reward for each reachable cell in the environment
         mazeEnv_render_preferential_action();
 
+        //Free the memory
         q_destroy();
         r_destroy();
 

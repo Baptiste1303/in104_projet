@@ -31,16 +31,17 @@ Le premier **Makefile** permet de créer un éxécutable **dfs.x** en éxécutan
 Le second **Makefile** permet de créer un éxécutable **qlearning.x**, en éxécutant la commande ``commande``, qui :
 - affiche le labyrinthe
 - effectue l'algorithme Q-Learning avec la règle epsilon-greedy 
-- affiche l'action préférentielle dans chaque case où l'agent peut se trouver [à faire]
-- enregistre dans un fichier Q_valeurs.txt les valeurs finales de Q [à faire]
+- affiche l'action préférentielle dans chaque case où l'agent peut se trouver
+- enregistre dans un fichier Q_valeurs.txt les valeurs finales de Q
 
 ### Difficultés rencontrées et état d'avancement
 
 Les principales difficultés rencontrées sont :
 
-* Difficulés sur l'actuélisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérérée et corrigée, liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
-* Problèmes liés aux choix des coefficients de recompenses qui induisent dans certains cas des problèmes de convergence. En effet, leurs choix est compliqués car ils sont en partie aléatoires. [non réglé]
+* Difficulés sur l'actuélisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérée et corrigée, elle était liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
+* Problèmes liés aux choix des coefficients de recompenses qui induisent dans certains cas des problèmes de convergence. En effet, leurs choix est compliqués car ils sont en partie aléatoires. [réglé]
+*L'utilisation de la fonction *update_visited(state_col,state_row)* induit un segmentation fault [non réglé]
 
-L'algorithme [qlearning.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/qlearning.c) ainsi que les **Makefiles** sont fonctionnels. Cependant nous rencontrons un problème avec la fonction *update_visited(state_col,state_row)* qui induit un segementation fault.
+L'algorithme [qlearning.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/qlearning.c) ainsi que les **Makefiles** sont fonctionnels.
 
 Les autres algorithmes d'apprentissage par renforcement n'ont pas encore été implémentés.
