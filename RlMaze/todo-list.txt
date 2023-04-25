@@ -1,4 +1,4 @@
 #### TO DO LIST ####
  
 gérer le bug sur crumn/visitedm
-
+Ajouter la génération du dernière épisode pour voir le chemin parcouru par l'agent
