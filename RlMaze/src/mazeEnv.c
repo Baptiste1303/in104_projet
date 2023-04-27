@@ -3,7 +3,6 @@
 #include "qlearning.h"
 
 char** mazeEnv;
-//char** mazeEnvepisode;
 int** visited;
 int rows;
 int cols;
@@ -112,43 +111,10 @@ void mazeEnv_render_pos(){
     mazeEnv[state_row][state_col] = c;
 }
 
-/*
-//Copie de l'original mazeEnv dans une autre variable mazeEnvepisode sur laquelle on va travailler à chaque épisode
-void alloc_mazeEnvepisode(){
-        mazeEnvepisode = malloc(rows * sizeof(char*));
-
-     for(int i=0; i<rows; i++) {
-        mazeEnvepisode[i] = malloc(cols * sizeof(char*));
-     }
-}
-
-void mazeEnvepisode_init(){
-    alloc_mazeEnvepisode();
-     for (int i = 0 ; i < rows ; i++){
-        for (int j = 0 ; j < cols ; j++){
-            mazeEnvepisode[i][j] = mazeEnv[i][j];
-        }
-     }
-}
-
-void mazeEnvepisode_render_pos(){
-     mazeEnvepisode[state_row][state_col] = 'o'; 
-     for (int i=0; i<rows; i++) {
-         for (int j=0; j< cols; j++){
-             printf("%c ", mazeEnvepisode[i][j]);
-         }
-         printf("\n");
-     }
-     printf("\n");
-}
-*/
-
+//Remet l'agent au départ
 void mazeEnv_reset(){
     state_row = start_row;
     state_col = start_col;
-
-    //Recreate original maze because crumbs can replace wall 
-    //mazeEnvepisode_init();
 }
 
 /*Mise à jour du struct envOutput en fonction d'une action donnée*/
@@ -176,48 +142,43 @@ envOutput mazeEnv_step(action a){
     }
 
     //Si on atteint l'objectif
-
     if((temp_row == goal_row) && (temp_col == goal_col)){
-       done = 1 ;
+        done = 1 ;
     }
-
-    //Si on recontre un mur, l'agent ne bouge pas
 
     // L'algorithme a été construit de manière a ce qu'on puisse compiler dfs et qlearning
     // Nous avons donc trouvé une solution alternative pour ne pas faire appel à la variable r qui empechait la compilation de dfs
-
     if (mazeEnv[temp_row][temp_col] != '+'){
-            //Si on ne rencontre pas de mur
-            state_col = temp_col ;
-            state_row = temp_row ;
-        } 
-    else{
-            wall = 1;
-            
-        }
-
+        //Si on ne rencontre pas de mur
+        state_col = temp_col ;
+        state_row = temp_row ;
+    } else {
+        //Si on recontre un mur, l'agent ne bouge pas
+        wall = 1;  
+    }
 
     stepOut.wall = wall;
     stepOut.done   = done;
     stepOut.new_col = state_col;
     stepOut.new_row = state_row; 
 
-   return stepOut;
+    return stepOut;
 }
 
 //Choisi une action au hasard 
 action env_action_sample(){
-  return (enum action)(rand() % number_actions);
+    return (enum action)(rand() % number_actions);
 }
 
 //Allocation de la mémoire pour un tableau des lieux visités
 void alloc_visited(){
-        visited = malloc(rows * sizeof(int*));
+    visited = malloc(rows * sizeof(int*));
 
-        for (int i = 0; i < rows; ++i){
-                visited[i] = malloc(cols * sizeof(int*));
-        }
+    for (int i = 0; i < rows; ++i){
+        visited[i] = malloc(cols * sizeof(int*));
+    }
 }
+
 
 void init_visited() {
     alloc_visited();
@@ -226,57 +187,34 @@ void init_visited() {
     for (i = 0; i < rows; ++i) {
         for (j = 0; j < cols; ++j) {
             if (mazeEnv[i][j] == '+') {
-                    visited[i][j] = wall;
+                visited[i][j] = wall;
             } else if (mazeEnv[i][j] == 'g') {
-                    visited[i][j] = goal;
+                visited[i][j] = goal;
             } else {
-                    visited[i][j] = unknown;
+                visited[i][j] = unknown;
             }
         }
     }
 }
 
-//A REVOIR
-void update_visited(int col, int row){
-    visited[col][row] = crumb ;
+//Actuelise le tableau visited en laissant des "miettes"
+void update_visited(){
+    visited[state_row][state_col] = crumb ;
 }
 
+//Ajoute les "miettes" dans le labyrinthe
 void add_crumbs(){
-     for (int i=0; i<rows; i++){
-          for (int j=0; j<cols; j++){
-              if (visited[i][j] == crumb){
-                  mazeEnv[i][j] ='.';
-              }
-          }
-     }
-     mazeEnv[start_row][start_col]= 's';
-}
-
-
-/*
-//Enregistre le chemin choisi par l'agent dans mazeEnvepisode.
-void add_crumbs(){
-     for (int i=0; i<rows; i++){
-          for (int j=0; j<cols; j++){
-              if (visited[i][j] ==crumb){
-                  mazeEnvepisode[i][j] ='.';
-              }
-          }
-     }
-     mazeEnvepisode[start_row][start_col]= 's';
-}
-*/
-
-/*
-void mazeEnvepisode_destroy(){
-    int i;
-    for (i = 0; i < rows; ++i){
-                free(mazeEnvepisode[i]);
+    for (int i=0; i<rows; i++){
+        for (int j=0; j<cols; j++){
+            if (visited[i][j] == crumb){
+                mazeEnv[i][j] ='.';
+            }
         }
-    free(mazeEnvepisode);
+    }
+    mazeEnv[start_row][start_col]= 's';
 }
-*/
 
+//Libérer la mémoire de mazeEnv
 void mazeEnv_destroy(){
     int i;
     for (i = 0; i < rows; ++i){
@@ -285,6 +223,7 @@ void mazeEnv_destroy(){
     free(mazeEnv);
 }
 
+//Libérer la mémoire de visited
 void visited_destroy(){
     int i ;
     for (i = 0; i < rows; ++i){

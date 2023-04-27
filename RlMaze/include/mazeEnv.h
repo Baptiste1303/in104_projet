@@ -5,7 +5,6 @@
 #include <stdlib.h>
 
 extern char** mazeEnv;
-//extern char** mazeEnvepisode;
 extern int** visited;
 extern int rows;
 extern int cols;
@@ -39,7 +38,6 @@ struct envOutput{
   int new_row;
   int wall;
   int done;
-
 };
 
 typedef struct envOutput envOutput;
@@ -52,12 +50,6 @@ void mazeEnv_render();
 
 void mazeEnv_render_pos();
 
-//void alloc_mazeEnvepisode();
-
-//void mazeEnvepisode_init();
-
-//void mazeEnvepisode_render_pos();
-
 void mazeEnv_reset();
 
 envOutput mazeEnv_step(action a);
@@ -68,11 +60,9 @@ void alloc_visited();
 
 void init_visited();
 
-void update_visited(int col, int row);
+void update_visited();
 
 void add_crumbs();
-
-//void mazeEnvepisode_destroy();
 
 void mazeEnv_destroy();
 

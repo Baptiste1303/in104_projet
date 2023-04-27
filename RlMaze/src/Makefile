@@ -5,7 +5,7 @@ LDFLAGS=-L.
 all: qlearning.x
 
 qlearning.x: qlearning.o functions.o mazeEnv.o 
-	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lm
 
 dfs.x: dfs.o functions.o mazeEnv.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
