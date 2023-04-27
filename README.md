@@ -35,8 +35,11 @@ Rentrer la commande ``make`` pour générer un exécutable
 En l'excutant grâce à ``./qlearning.x`` cela :
 - affiche le labyrinthe
 - effectue l'algorithme Q-Learning avec la règle epsilon-greedy 
-- affiche l'action préférentielle dans chaque case où l'agent peut se trouver
+- affiche l'action avec la récompense maximale pour chaque case
 - enregistre dans un fichier Q_valeurs.txt les valeurs finales de Q
+- affiche le dernier chemin emprunté par l'agent
+
+La commande ``make realclean`` permet de supprimer tous les .o et .x.
 
 ### Difficultés rencontrées et état d'avancement
 
@@ -44,9 +47,10 @@ Les principales difficultés rencontrées sont :
 
 * Difficultés sur l'actualisation de la position dans *mazeEnv_step*. Après une action, la nouvelle position renvoyée était incorrecte. L'erreur a été repérée et corrigée, elle était liée au fait que certaines varibles étaient déclarées et utilisées dans leur avoir assigné de valeurs. [réglé]
 * Problèmes liés aux choix des coefficients de recompenses qui induisent dans certains cas des problèmes de convergence. En effet, leurs choix est compliqués car ils sont en partie aléatoires. [réglé]
-* Difficultés pour faire en sorte que les algorithmes qlearning.c et dfs.c puissent compiler en même temps (variable r non déclarée dans dfs.c et utilisation de r dans qlearning.c) [réglé]
-* L'utilisation de la fonction *update_visited(state_col,state_row)* induit un segmentation fault [non réglé]
+* Difficultés pour faire en sorte que les algorithmes qlearning.c et dfs.c puissent compiler en même temps. En effet, la variable r (tableau regroupant les récompenses) était utiliséé dans MazeEnv.c, mais non utilisée pour dfs.c et indisensable dans qlearning.c [réglé]
+* L'utilisation de la fonction *update_visited(state_col,state_row)* induit un segmentation fault. L'erreur eétait due à l'inversion des arguments entre lignes et colonnes. [réglé]
 
 L'algorithme [qlearning.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/qlearning.c) ainsi que le [Makefile](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/Makefile) sont fonctionnels.
 
 Les autres algorithmes d'apprentissage par renforcement n'ont pas encore été implémentés.
+Nous avons pour objectif par la suite d'implémenter ces algorithmes dans d'autres environnements.
