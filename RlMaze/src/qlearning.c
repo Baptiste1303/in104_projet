@@ -1,7 +1,7 @@
 #include "qlearning.h"
 
-float alpha_value = 0.15 ; // learning rate 
-float gamma_value = 0.99 ; // discount factor (importance given to future rewards compared to immediate rewards)
+float alpha_value = 0.2 ; // learning rate 
+float gamma_value = 0.990 ; // discount factor (importance given to future rewards compared to immediate rewards)
 int nb_episodes = 1000;
 
 double** q; //Table q for state-action values
@@ -55,7 +55,7 @@ action best_action(int state, double *max_val){
 }
 
 //Update the q-table
-void q_update(action a, int state, int reward, int new_state){
+action q_update(action a, int state, int reward, int new_state){
         // return the action that maximize q
         double max_val;
         action b_action=best_action(new_state, &max_val);
@@ -214,11 +214,10 @@ int main(){
         
         // Get reward & new state
         envOutput new_state_env ; 
-        new_state_env=mazeEnv_step(state_action);
+        new_state_env = mazeEnv_step(state_action);
         wall = new_state_env.wall ;
         new_state = get_state();
         reward = get_reward(wall);
-
         new_action = q_update(state_action, state,reward, new_state);
        
         // Update state and action
@@ -236,9 +235,10 @@ int main(){
                 new_state = get_state();
                 wall = new_state_env.wall ;
                 reward = get_reward(wall);
-                q_update(state_action, state, reward, new_state);
+                new_action = q_update(state_action, state, reward, new_state);
 
                 state = new_state ;
+                state_action = new_action ;
 
                 if (episode == nb_episodes-1){
                         //Save the last path taken by the agent

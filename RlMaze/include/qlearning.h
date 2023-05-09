@@ -23,7 +23,7 @@ int get_state();
 
 action best_action(int state, double *max_val);
 
-void q_update(action a, int state, int reward, int new_state);
+action q_update(action a, int state, int reward, int new_state);
 
 action choose_action_epsillon_greedy(int state, double epsillon);
 
