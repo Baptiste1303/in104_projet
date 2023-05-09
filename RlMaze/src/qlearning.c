@@ -55,7 +55,7 @@ action best_action(int state, double *max_val){
 }
 
 //Update the q-table
-action q_update(action a, int state, int reward, int new_state){
+void q_update(action a, int state, int reward, int new_state){
         // return the action that maximize q
         double max_val;
         action b_action=best_action(new_state, &max_val);
@@ -236,10 +236,9 @@ int main(){
                 new_state = get_state();
                 wall = new_state_env.wall ;
                 reward = get_reward(wall);
-                new_action = q_update(state_action, state, reward, new_state);
+                q_update(state_action, state, reward, new_state);
 
                 state = new_state ;
-                state_action = new_action ;
 
                 if (episode == nb_episodes-1){
                         //Save the last path taken by the agent
