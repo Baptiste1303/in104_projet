@@ -1,7 +1,7 @@
 #include "qlearning.h"
 
-float alpha_value = 0.1 ; // learning rate 
-float gamma_value = 0.9 ; // discount factor (importance given to future rewards compared to immediate rewards)
+float alpha_value = 0.15 ; // learning rate 
+float gamma_value = 0.99 ; // discount factor (importance given to future rewards compared to immediate rewards)
 int nb_episodes = 1000;
 
 double** q; //Table q for state-action values
@@ -102,7 +102,7 @@ void r_init(){
                                 r[i][j] = -50;
                         } 
                         else {
-                                r[i][j] = 2;
+                                r[i][j] = 5;
                         } 
                 }
         }
@@ -247,7 +247,7 @@ int main(){
                 }
         }
         // reduce the exploration rate epsilon over time 
-        epsilon=epsilon - exp(-8.8*epsilon);
+        epsilon=epsilon - exp(-8.9*epsilon);
         // ensure that the exploration rate does not go below the final rate
         epsilon=(epsilon<epsilon_end) ? epsilon_end : epsilon;
 
