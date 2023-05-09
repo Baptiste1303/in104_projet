@@ -1,8 +1,8 @@
 #include "sarsa.h"
 
 float alpha_value = 0.1 ; // learning rate 
-float gamma_value = 0.9 ; // discount factor (importance given to future rewards compared to immediate rewards)
-int nb_episodes = 1000;
+float gamma_value = 1 ; // discount factor (importance given to future rewards compared to immediate rewards)
+int nb_episodes = 100;
 
 double** q; //Table q for state-action values
 double** r; //Table that groups rewards
@@ -40,7 +40,6 @@ int get_state(){
         return (state_row*(cols)+state_col);
 }
 
-//Return the best action and its value in Q for a given state
 action best_action(int state, double *max_val){
         int action_index = 3 ;
         *max_val = q[state][3]; //Passed by reference
@@ -55,13 +54,10 @@ action best_action(int state, double *max_val){
 }
 
 //Update the q-table
-void q_update(action a, int state, int reward, int new_state){
+void q_update(action a, action next_action, int state, int reward, int new_state){
         // return the action that maximize q
-        double max_val;
-        action b_action=best_action(new_state, &max_val);
 
-        q[state][a] = q[state][a] + alpha_value * (reward + gamma_value * max_val - q[state][a]);
-        return b_action;
+        q[state][a] = q[state][a] + alpha_value * (reward + gamma_value * q[new_state][next_action] - q[state][a]);
 }
 
 // Choose the next action to take using an epsilon-greedy policy
@@ -91,7 +87,7 @@ void r_init(){
                 for (int j = 0; j < cols; ++j) {
                         //For a wall
                         if (mazeEnv[i][j] == '+') {
-                                r[i][j] = -400;
+                                r[i][j] = -100;
                         } 
                         //For the goal
                         else if (mazeEnv[i][j] == 'g') {
@@ -194,7 +190,7 @@ int main(){
         r_init(); //Table that groups rewards
         
         action state_action ;
-        action new_action ;
+        action next_action ;
         int state; //Position of the agent
         int new_state;
         int reward;
@@ -214,37 +210,31 @@ int main(){
         
         // Get reward & new state
         envOutput new_state_env ; 
-        new_state_env=mazeEnv_step(state_action);
-        wall = new_state_env.wall ;
-        new_state = get_state();
-        reward = get_reward(wall);
 
-        new_action = q_update(state_action, state,reward, new_state);
-       
-        // Update state and action
-        state = new_state ;
-        state_action = new_action ;
 
-        update_visited(state_row,state_col);
-        
         while(new_state_env.done != 1){
-                state = get_state();
-                state_action = choose_action_epsillon_greedy(state, epsilon);
-
                 new_state_env = mazeEnv_step(state_action);
-
-                new_state = get_state();
                 wall = new_state_env.wall ;
                 reward = get_reward(wall);
-                q_update(state_action, state, reward, new_state);
+                
+
+                new_state = get_state();
+                next_action = choose_action_epsillon_greedy(new_state, epsilon);
+
+                q_update(state_action, next_action, state, reward, new_state);
 
                 state = new_state ;
+                state_action = next_action;
 
                 if (episode == nb_episodes-1){
                         //Save the last path taken by the agent
                         update_visited();
+
                 }
         }
+        printf("done : %d \n", new_state_env.done); // ici done n'est jamais mis à jour - modification nécessaire
+
+
         // reduce the exploration rate epsilon over time 
         epsilon=epsilon - exp(-8.8*epsilon);
         // ensure that the exploration rate does not go below the final rate
