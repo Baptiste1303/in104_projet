@@ -137,17 +137,24 @@ void mazeEnv_render_preferential_action(){
                 for (int j=0; j< cols; j++){
                         if (mazeEnv[i][j] == '+'){
                                 printf("%c ", mazeEnv[i][j]);
-                        } else {
+                        } 
+                        else if (mazeEnv[i][j] == 's'){
+                                printf("\033[34ms\033[0m ");
+                        }
+                        else if (i == goal_row && j == goal_col){
+                                printf("\033[34mg\033[0m ");
+                        }
+                        else {
                                 state=i*cols+j;
                                 b_action=(int)best_action(state, &unused);
                                 if (b_action==0){
-                                        printf("ᴧ ");
+                                        printf("\033[1;31mᴧ\033[0m ");
                                 } else if (b_action==1) {
-                                        printf("v ");
+                                        printf("\033[1;31mv\033[0m ");
                                 } else if (b_action==2) {
-                                        printf("< ");
+                                        printf("\033[1;31m<\033[0m ");
                                 } else {
-                                        printf("> ");
+                                        printf("\033[1;31m>\033[0m ");
                                 }
                         }
                 }

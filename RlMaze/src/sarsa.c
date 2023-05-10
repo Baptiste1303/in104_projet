@@ -1,8 +1,8 @@
 #include "sarsa.h"
 
-float alpha_value = 0.1 ; // learning rate 
+float alpha_value = 0.2 ; // learning rate 
 float gamma_value = 1 ; // discount factor (importance given to future rewards compared to immediate rewards)
-int nb_episodes = 100;
+int nb_episodes = 3000;
 
 double** q; //Table q for state-action values
 double** r; //Table that groups rewards
@@ -133,17 +133,24 @@ void mazeEnv_render_preferential_action(){
                 for (int j=0; j< cols; j++){
                         if (mazeEnv[i][j] == '+'){
                                 printf("%c ", mazeEnv[i][j]);
-                        } else {
+                        } 
+                        else if (mazeEnv[i][j] == 's'){
+                                printf("\033[34ms\033[0m ");
+                        }
+                        else if (i == goal_row && j == goal_col){
+                                printf("\033[34mg\033[0m ");
+                        }
+                        else {
                                 state=i*cols+j;
                                 b_action=(int)best_action(state, &unused);
                                 if (b_action==0){
-                                        printf("ᴧ ");
+                                        printf("\033[1;31mᴧ\033[0m ");
                                 } else if (b_action==1) {
-                                        printf("v ");
+                                        printf("\033[1;31mv\033[0m ");
                                 } else if (b_action==2) {
-                                        printf("< ");
+                                        printf("\033[1;31m<\033[0m ");
                                 } else {
-                                        printf("> ");
+                                        printf("\033[1;31m>\033[0m ");
                                 }
                         }
                 }
@@ -210,7 +217,7 @@ int main(){
         
         // Get reward & new state
         envOutput new_state_env ; 
-
+        new_state_env.done = 0 ;
 
         while(new_state_env.done != 1){
                 new_state_env = mazeEnv_step(state_action);
@@ -232,9 +239,6 @@ int main(){
 
                 }
         }
-        printf("done : %d \n", new_state_env.done); // ici done n'est jamais mis à jour - modification nécessaire
-
-
         // reduce the exploration rate epsilon over time 
         epsilon=epsilon - exp(-8.8*epsilon);
         // ensure that the exploration rate does not go below the final rate
