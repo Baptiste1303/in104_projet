@@ -202,6 +202,7 @@ int main(){
         int new_state;
         int reward;
         int wall; //Integer to know if there is a wall.
+        int goal_state = goal_row*(cols)+goal_col;
 
         double epsilon = 0.9;
         double epsilon_end=0.01;
@@ -233,8 +234,9 @@ int main(){
                 state = new_state ;
                 state_action = next_action;
 
-                if (episode == nb_episodes-1){
-                        //Save the last path taken by the agent
+                if (episode == nb_episodes-1 && state != goal_state ){
+                        // Save the last path taken by the agent
+                        // and avoid to add crumb to goal_state
                         update_visited();
 
                 }
