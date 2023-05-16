@@ -13,7 +13,7 @@ dfs.x: dfs.o functions.o mazeEnv.o
 sarsa.x : sarsa.o functions.o mazeEnv.o
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lm
 
-tictactoe.x : tictactoe.o functions.o mazeEnv.o
+tictactoe.x : tictactoe.o qlearning-tictactoe.c
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS) -lm
 
 %.o : src/%.c

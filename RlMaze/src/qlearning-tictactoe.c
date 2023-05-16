@@ -1,27 +1,24 @@
-#include "qlearning.h"
+#include "qlearning-tictactoe.h"
 
 float alpha_value = 0.2 ; // learning rate 
 float gamma_value = 0.990 ; // discount factor (importance given to future rewards compared to immediate rewards)
 int nb_episodes = 1000;
 
 double** q; //Table q for state-action values
-double** r; //Table that groups rewards
 
 //Table q for state-action values
 void q_alloc(){
-        q = malloc(rows * cols  * sizeof(double*));
-        action a = number_actions ;
-        for (int i = 0; i < rows * cols ; ++i){
-                q[i] = malloc((int)a * sizeof(double));
+        q = malloc(pow(3,9) * sizeof(double*));
+        for (int i = 0; i < pow(3,9) ; ++i){
+                q[i] = malloc(9 * sizeof(double));
         }
 }
 
 //We choose to initialize q as a zero-filled array
 void q_init(){
-        action a = number_actions ;
         q_alloc();
-        for (int i = 0; i < rows * cols ; ++i) {
-                for (int j = 0; j < (int)a; ++j) {
+        for (int i = 0; i < pow(3,9) ; ++i) {
+                for (int j = 0; j < 9; ++j) {
                         q[i][j]= 0 ; 
                 }
         } 
@@ -29,138 +26,158 @@ void q_init(){
 
 //Free the memory allocated for q 
 void q_destroy(){
-        for (int i = 0; i < rows * cols ; ++i){
+        for (int i = 0; i < pow(3,9) ; ++i){
                 free(q[i]);
         }
         free(q);
 }
 
-//Return the current position of the agent using the global variables state_row and state_col
-int get_state(){
-        return (state_row*(cols)+state_col);
+// cette fonction intialise actions en meme temps 
+actions_possible recherche_actions_possible(int* grille){
+
+        actions_possible results ;
+        int number_actions = 0 ;
+        int cmpt = 0 ;
+
+        for (int i = 0 ; i < 9 ; ++i){
+                if(grille[i] == 0){
+                ++number_actions;
+                }
+        }
+
+        int *actions = malloc(sizeof(int) * number_actions);
+
+        for (int i = 0 ; i < 9 ; ++i){
+                if(grille[i] == 0){
+                actions[cmpt] = i ;
+                ++cmpt;
+                }
+        }
+
+        results.number_actions = number_actions ;
+        results.list_actions = actions ; 
+
+    return results;
+}
+
+void free_actions(int *actions){
+    free(actions);
+}
+
+int gridTotern(int *grid){
+    int tern = 0 ;
+
+    for (int i = 0; i < 9; i++) {
+        tern += grid[8 - i] * pow(10, i);
+    }
+
+
+    return tern;
+}
+
+int convertToDecimal(int t) {
+    int decimalNumber = 0, i = 0, remainder;
+    while (t != 0) {
+        remainder = t % 10;
+        t /= 10;
+        decimalNumber += remainder * pow(3, i);
+        ++i;
+    }
+    return decimalNumber;
+}
+
+int get_state(int *grille){
+        int tern = gridTotern(grille);
+        int state = convertToDecimal(tern);
+        return state;
+}
+
+
+int inversionchiffre(int tern){
+    int resultat = 0;
+    int position = 1;
+
+    while (tern != 0) {
+        int chiffre = tern % 10;
+        if (chiffre == 1) {
+            chiffre = 2;
+        } else if (chiffre == 2) {
+            chiffre = 1;
+        }
+        resultat = resultat + chiffre * position;
+        position *= 10;
+        tern /= 10;
+    }
+
+    return resultat;
+}
+
+similitudes recherche_similitude(int tern){
+    // A compléter pour les rotations 
+
+    similitudes results ;
+    // Inversion joueur & adversaire 
+    results.mirroir = inversionchiffre(tern);
+
+
+    return results; 
 }
 
 //Return the best action and its value in Q for a given state
-action best_action(int state, double *max_val){
-        int action_index = 3 ;
-        *max_val = q[state][3]; //Passed by reference
+int best_action(int state, double *max_val, actions_possible actions){
+        int action_index = 0 ;
+        *max_val = q[state][0]; //Passed by reference
 
-        for (int i = 0; i < number_actions; i++) {
+        for (int i = 0; i < actions.number_actions; i++) {
                 if (q[state][i] > *max_val) {
                 *max_val = q[state][i];
                 action_index = i ;
                 }
         }
-        return (enum action) action_index;
+        return action_index;
+}
+
+int random_action(actions_possible actions){
+
+        srand(time(NULL)); 
+        int chiffre = rand() % (actions.number_actions + 1); 
+        return actions.list_actions[chiffre];
 }
 
 //Update the q-table
-action q_update(action a, int state, int reward, int new_state){
+int q_update(int action, int state, int reward, int new_state, actions_possible actions){
         // return the action that maximize q
         double max_val;
-        action b_action=best_action(new_state, &max_val);
+        int b_action = best_action(new_state, &max_val, actions);
 
-        q[state][a] = q[state][a] + alpha_value * (reward + gamma_value * max_val - q[state][a]);
+        q[state][action] = q[state][action] + alpha_value * (reward + gamma_value * max_val - q[state][action]);
         return b_action;
 }
 
 // Choose the next action to take using an epsilon-greedy policy
-action choose_action_epsillon_greedy(int state, double epsilon){
+int choose_action_epsillon_greedy(int state, double epsilon, actions_possible actions){
         //Generate a random number between 0 and 1
         double random_number = (double)rand() / RAND_MAX;
 
         if (random_number > epsilon) {
                 // Exploitation: Choose the action with the highest Q-value for the current state
                 double unused;
-                action b_action=best_action(state, &unused);
+                action b_action=best_action(state, &unused, actions);
                 return b_action;
         } else {
                 // Exploration: Choose a random action
-                return env_action_sample();
+                return random_action(actions);
         }
 }
 
-// Initialisation of the table that groups rewards based on the elements of the maze
-void r_init(){
-        r = malloc(rows * sizeof(int*));
-        for (int i = 0; i < rows; ++i){
-                r[i] = malloc(cols * sizeof(int*));
-        }
 
-        for (int i = 0; i < rows; ++i) {
-                for (int j = 0; j < cols; ++j) {
-                        //For a wall
-                        if (mazeEnv[i][j] == '+') {
-                                r[i][j] = -400;
-                        } 
-                        //For the goal
-                        else if (mazeEnv[i][j] == 'g') {
-                                r[i][j] = 10000;
-                        } 
-                        //For the start
-                        else if (mazeEnv[i][j] == 's') {
-                                r[i][j] = -50;
-                        } 
-                        else {
-                                r[i][j] = 5;
-                        } 
-                }
-        }
-}
+//Take the reward based on the agent's current state
+int* get_rewards(int *grid, actions_possible actions){
+        int *rewards = malloc(sizeof(int) * 9) ;
 
-//Take the reward based on the agent's current position
-int get_reward(int wall){
-        if (wall == 1){
-                //if the agent hits a wall
-                return(r[0][0]);
-        }
-        else{
-                return (r[state_row][state_col]);
-        }
-        
-}
 
-//Free the memory allocated for r
-void r_destroy(){
-        for (int i = 0; i < rows; ++i){
-                free(r[i]);
-        }
-        free(r);
-}
 
-//Display the maze with the action that has the maximum reward for each reachable cell in the environment
-void mazeEnv_render_preferential_action(){
-        int state;
-        int b_action;
-        double unused;
-        for (int i=0; i<rows; i++) {
-                for (int j=0; j< cols; j++){
-                        if (mazeEnv[i][j] == '+'){
-                                printf("%c ", mazeEnv[i][j]);
-                        } 
-                        else if (mazeEnv[i][j] == 's'){
-                                printf("\033[34ms\033[0m ");
-                        }
-                        else if (i == goal_row && j == goal_col){
-                                printf("\033[34mg\033[0m ");
-                        }
-                        else {
-                                state=i*cols+j;
-                                b_action=(int)best_action(state, &unused);
-                                if (b_action==0){
-                                        printf("\033[1;31mᴧ\033[0m ");
-                                } else if (b_action==1) {
-                                        printf("\033[1;31mv\033[0m ");
-                                } else if (b_action==2) {
-                                        printf("\033[1;31m<\033[0m ");
-                                } else {
-                                        printf("\033[1;31m>\033[0m ");
-                                }
-                        }
-                }
-                printf("\n");
-        }
-        printf("\n");
+        // DANS LA FONCTION OU ON UTILE REWARDS, PENSER A FREE REWARDS
 }
 
 //Saving the q-values to q_values.txt
@@ -187,47 +204,40 @@ int main(){
         //Initialize the time for the random number generator
         srand(time(0));
 
-        mazeEnv_make("../data/maze.txt");
-        init_visited();
-
-        printf("rows=%d, cols=%d \n", rows, cols);
-        printf("number of actions :  %d \n\n", number_actions);
         
-        //Display the maze
-        printf("The Maze:\n");
-        mazeEnv_render();
 
         q_init(); //Table q for state-action values
-        r_init(); //Table that groups rewards
         
-        action state_action ;
-        action new_action ;
         int state; //Position of the agent
         int new_state;
         int reward;
-        int wall; //Integer to know if there is a wall.
-        int goal_state = goal_row*(cols)+goal_col;
-
+        int state_action;
+        int new_action;
 
         double epsilon = 0.9;
         double epsilon_end=0.01;
         
+        srand(time(0));
+        int *pgrille = creer_grille();
+
         for (int episode = 0 ; episode < nb_episodes ; ++episode){
 
-        // Maze reset
-        mazeEnv_reset();
-        state = get_state();
+        // grid_reset();
+        state = get_state(pgrille);
         
         // Chosing action
-        state_action = choose_action_epsillon_greedy(state, epsilon);
+        actions_possible actions = recherche_actions_possible(pgrille);
+        state_action = choose_action_epsillon_greedy(state, epsilon,actions);
         
         // Get reward & new state
         envOutput new_state_env ; 
         new_state_env = mazeEnv_step(state_action);
         wall = new_state_env.wall ;
-        new_state = get_state();
-        reward = get_reward(wall);
-        new_action = q_update(state_action, state,reward, new_state);
+
+        new_state = get_state(pgrille);
+        reward = get_reward(pgrid , actions);
+
+        new_action = q_update(state_action, state,reward, new_state,actions_possible actions);
        
         // Update state and action
         state = new_state ;
@@ -249,17 +259,15 @@ int main(){
                 state = new_state ;
                 state_action = new_action ;
 
-                if (episode == nb_episodes-1 && state != goal_state){
-                        //Save the last path taken by the agent
-                        update_visited();
-                }
+        
         }
+
         // reduce the exploration rate epsilon over time 
         epsilon=epsilon - exp(-8.9*epsilon);
         // ensure that the exploration rate does not go below the final rate
         epsilon=(epsilon<epsilon_end) ? epsilon_end : epsilon;
 
-        add_crumbs();
+        free_actions();
         }
 
         //Saving the q-values to q_values.txt

@@ -12,49 +12,6 @@ void free_grille(int* grille){
     free(grille);
 }
 
-// Action vide = -1 
-int* creer_actions(){
-    int* actions = malloc(sizeof(int) * 9);
-    for(int i = 0 ; i < 9 ; ++i){
-        actions[i] = -1 ;
-    }
-    return actions;
-}
-
-int* actions_possible(int *actions, int* grille){
-    for (int i = 0 ; i < 9 ; ++i){
-        if(grille[i] == 0){
-            actions[i] = 1 ;
-        }
-    }
-    return actions;
-}
-
-void free_actions(int *actions){
-    free(actions);
-}
-
-int gridToint(int *grid){
-    int result = 0 ;
-
-    for (int i = 0; i < 9; i++) {
-        result += grid[8 - i] * pow(10, i);
-    }
-
-
-    return result;
-}
-
-int convertToDecimal(int t) {
-    int decimalNumber = 0, i = 0, remainder;
-    while (t != 0) {
-        remainder = t % 10;
-        t /= 10;
-        decimalNumber += remainder * pow(3, i);
-        ++i;
-    }
-    return decimalNumber;
-}
 
 void afficher(int *grille) {
   int j = 0;
@@ -113,10 +70,11 @@ int a_gagne(int* grille, int joueur){
 
 
 
-int main() {
+void play() {
     int *pgrille = creer_grille();
     srand(time(0));
     int chiffre_entre = 0;
+
 
     while (a_gagne(pgrille,1) == -1){
         
@@ -150,11 +108,25 @@ else {
 printf("Match nul\n");
 }
 
-int a = gridToint(pgrille);
+
+// TEST min-max
+
+/*  
+int *pgrille2 = creer_grille();
+
+pgrille2[0] = 2 ; 
+pgrille2[1] = 2 ; 
+pgrille2[2] = 2 ; 
+pgrille2[3] = 1 ; 
+pgrille2[4] = 1 ; 
+
+int a = gridTotern(pgrille2);
 int s = convertToDecimal(a);
 
 printf("La base 10 est %9.d et le chiffre est %d", a,s);
 
+*/
+
 free(pgrille);
-return 0; }
+}
 
