@@ -1,5 +1,17 @@
 #### TO DO LIST ####
  
-implémenter SARSA
-implémenter un labyrinthe plus grand ?
-implémenter d'autres environnements
+implémenter un labyrinthe plus grand !!! + revoir exponentielle (optionnel)
+
+Repérer le max et le min de la fonction bijective pour joindre les états et le tableau q
+
+implémenter fonction de rotation pour identifier états
+
+Implémenter similitude avec opposition de joeur (2012 -> 1021)
+
+Créer fonctions Q, R 
+
+Mettre en place l'algorithme 
+
+Enregistrer les valeurs de Q car une fois entrainé on le re entraine plus 
+
+Faire un mode ou on peut juste jouer contre l'IA 
