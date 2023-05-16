@@ -1,17 +1,27 @@
 #### TO DO LIST ####
  
+UPDATE : va sur github et regarde le commit pour les nouveautés, ca va t'être utile
+
 implémenter un labyrinthe plus grand !!! + revoir exponentielle (optionnel)
 
+
 Repérer le max et le min de la fonction bijective pour joindre les états et le tableau q
+MIN : 0 (grille de départ vide) - MAX : 19278 (config ou le gagnant a la ligne sur la puissance plus élevé)
+(mais 3^9 = 19 683 ???? erreur ?)
+
 
 implémenter fonction de rotation pour identifier états
 
-Implémenter similitude avec opposition de joeur (2012 -> 1021)
+Trouver une relation mathématiques pour trouver les récompenses 
 
-Créer fonctions Q, R 
+Créer un moyen de reset la grille et d'un boolen pour la boucle while
 
 Mettre en place l'algorithme 
 
 Enregistrer les valeurs de Q car une fois entrainé on le re entraine plus 
 
 Faire un mode ou on peut juste jouer contre l'IA 
+
+
+J'ai déplacer les fonctions de tictactoe car dedans faudrait qu'il y est juste 
+les fonctions pour jouer au jeux
