@@ -1,8 +1,8 @@
 #include "sarsa.h"
 
-float alpha_value = 0.2 ; // learning rate 
-float gamma_value = 1 ; // discount factor (importance given to future rewards compared to immediate rewards)
-int nb_episodes = 3000;
+float alpha_value = 0.1 ; // learning rate 
+float gamma_value = 0.99 ; // discount factor (importance given to future rewards compared to immediate rewards)
+int nb_episodes = 1000;
 
 double** q; //Table q for state-action values
 double** r; //Table that groups rewards
