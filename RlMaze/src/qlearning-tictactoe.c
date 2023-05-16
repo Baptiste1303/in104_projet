@@ -162,7 +162,7 @@ int choose_action_epsillon_greedy(int state, double epsilon, actions_possible ac
         if (random_number > epsilon) {
                 // Exploitation: Choose the action with the highest Q-value for the current state
                 double unused;
-                action b_action=best_action(state, &unused, actions);
+                int b_action=best_action(state, &unused, actions);
                 return b_action;
         } else {
                 // Exploration: Choose a random action
@@ -190,9 +190,9 @@ void extract_q_values(){
         }
 
         fprintf(fp, "Case |    up    |   down   |  left  |  right\n");
-        for (int i = 0; i < rows * cols ; ++i) {
+        for (int i = 0; i < pow(3,9) ; ++i) {
                 fprintf(fp, "%4d : ", i);
-                for (int j = 0; j < number_actions; ++j) {
+                for (int j = 0; j < 9; ++j) {
                         fprintf(fp, "%7.1f, ", q[i][j]) ; 
                 }
                 fprintf(fp, "\n");
@@ -208,7 +208,7 @@ int main(){
 
         q_init(); //Table q for state-action values
         
-        int state; //Position of the agent
+        int state; 
         int new_state;
         int reward;
         int state_action;
@@ -223,6 +223,7 @@ int main(){
         for (int episode = 0 ; episode < nb_episodes ; ++episode){
 
         // grid_reset();
+        reset_grid(pgrille);
         state = get_state(pgrille);
         
         // Chosing action
@@ -230,36 +231,44 @@ int main(){
         state_action = choose_action_epsillon_greedy(state, epsilon,actions);
         
         // Get reward & new state
-        envOutput new_state_env ; 
-        new_state_env = mazeEnv_step(state_action);
-        wall = new_state_env.wall ;
 
         new_state = get_state(pgrille);
-        reward = get_reward(pgrid , actions);
+        reward = get_reward(pgrille , actions);
 
-        new_action = q_update(state_action, state,reward, new_state,actions_possible actions);
+        new_action = q_update(state_action, state,reward, new_state, actions);
        
         // Update state and action
         state = new_state ;
         state_action = new_action ;
 
-        update_visited(state_row,state_col);
+        // Update the grid
+
+        placer(pgrille, state_action, 1);
+        placer_alea(pgrille, 2);
         
-        while(new_state_env.done != 1){
-                state = get_state();
-                state_action = choose_action_epsillon_greedy(state, epsilon);
+        while(a_gagne(pgrille,1) == -1){
+                state = get_state(pgrille);
+        
+                // Chosing action
+                actions_possible actions = recherche_actions_possible(pgrille);
+                state_action = choose_action_epsillon_greedy(state, epsilon,actions);
+        
+                // Get reward & new state
 
-                new_state_env = mazeEnv_step(state_action);
+                new_state = get_state(pgrille);
+                reward = get_reward(pgrille , actions);
 
-                new_state = get_state();
-                wall = new_state_env.wall ;
-                reward = get_reward(wall);
-                new_action = q_update(state_action, state, reward, new_state);
-
+                new_action = q_update(state_action, state,reward, new_state, actions);
+       
+                // Update state and action
                 state = new_state ;
                 state_action = new_action ;
 
-        
+                // Update the grid
+
+                placer(pgrille, state_action, 1);
+                placer_alea(pgrille, 2);
+
         }
 
         // reduce the exploration rate epsilon over time 
@@ -267,25 +276,17 @@ int main(){
         // ensure that the exploration rate does not go below the final rate
         epsilon=(epsilon<epsilon_end) ? epsilon_end : epsilon;
 
-        free_actions();
+        free_actions(actions.list_actions);
         }
 
         //Saving the q-values to q_values.txt
-        extract_q_values();
+        //extract_q_values();
 
-        //Display the maze with the action that has the maximum reward for each reachable cell in the environment
-        printf("Actions with the maximum reward:\n");
-        mazeEnv_render_preferential_action();
-        //Display the last path taken by the agent
-        printf("Last path taken by the agent:\n");
-        mazeEnv_render();
+
+
 
         //Free the memory
         q_destroy();
-        r_destroy();
-
-        mazeEnv_destroy();
-        visited_destroy();
 
         return 0 ;
 }

@@ -3,7 +3,7 @@
 
 #include <math.h>
 #include <time.h>
-#include <mazeEnv.h>
+#include <tictactoe.h>
 
 extern float alpha_value; 
 extern float gamma_value; 

@@ -8,10 +8,15 @@ int *creer_grille() {
   return grille;
 };
 
+void reset_grid(int *grille){
+    for (int i = 0; i < 9; ++i) {
+    grille[i] = 0;
+  }
+}
+
 void free_grille(int* grille){
     free(grille);
 }
-
 
 void afficher(int *grille) {
   int j = 0;

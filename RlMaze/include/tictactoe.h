@@ -9,6 +9,8 @@
 
 int *creer_grille();
 
+void reset_grid(int *grille);
+
 void free_grille(int* grille);
 
 void afficher(int *grille);
