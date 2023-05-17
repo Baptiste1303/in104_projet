@@ -1,7 +1,7 @@
 #include "qlearning.h"
 
 float alpha_value = 0.2 ; // learning rate 
-float gamma_value = 0.990 ; // discount factor (importance given to future rewards compared to immediate rewards)
+float gamma_value = 0.99 ; // discount factor (importance given to future rewards compared to immediate rewards)
 int nb_episodes = 1000;
 
 double** q; //Table q for state-action values
@@ -208,7 +208,6 @@ int main(){
         int wall; //Integer to know if there is a wall.
         int goal_state = goal_row*(cols)+goal_col;
 
-
         double epsilon = 0.9;
         double epsilon_end=0.01;
         
@@ -236,6 +235,7 @@ int main(){
         update_visited(state_row,state_col);
         
         while(new_state_env.done != 1){
+                
                 state = get_state();
                 state_action = choose_action_epsillon_greedy(state, epsilon);
 
@@ -255,7 +255,7 @@ int main(){
                 }
         }
         // reduce the exploration rate epsilon over time 
-        epsilon=epsilon - exp(-8.9*epsilon);
+        epsilon=epsilon - exp(-9*epsilon);
         // ensure that the exploration rate does not go below the final rate
         epsilon=(epsilon<epsilon_end) ? epsilon_end : epsilon;
 

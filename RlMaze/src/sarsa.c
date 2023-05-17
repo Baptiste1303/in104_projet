@@ -218,19 +218,24 @@ int main(){
         
         // Get reward & new state
         envOutput new_state_env ; 
+        // To enter the loop
         new_state_env.done = 0 ;
 
         while(new_state_env.done != 1){
                 new_state_env = mazeEnv_step(state_action);
+                
+                // Get the reward
                 wall = new_state_env.wall ;
                 reward = get_reward(wall);
                 
-
+                // Get the new state and choose the nex action
                 new_state = get_state();
                 next_action = choose_action_epsillon_greedy(new_state, epsilon);
 
+                //Update du q-table
                 q_update(state_action, next_action, state, reward, new_state);
 
+                // Update state and action
                 state = new_state ;
                 state_action = next_action;
 
@@ -241,9 +246,9 @@ int main(){
 
                 }
         }
-        // reduce the exploration rate epsilon over time 
-        epsilon=epsilon - exp(-8.8*epsilon);
-        // ensure that the exploration rate does not go below the final rate
+        // Reduce the exploration rate epsilon over time 
+        epsilon=epsilon - exp(-9*epsilon);
+        // Ensure that the exploration rate does not go below the final rate
         epsilon=(epsilon<epsilon_end) ? epsilon_end : epsilon;
 
         add_crumbs();
