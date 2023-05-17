@@ -39,11 +39,15 @@ int convertToDecimal(int t);
 
 int get_state(int *grille);
 
-int inversionchiffre(int tern);
+int invert_digits(int ternary);
+
+int invert_first_last(int ternary);
 
 similitudes recherche_similitude(int tern);
 
 int best_action(int state, double *max_val,actions_possible actions);
+
+int random_action(actions_possible actions);
 
 int q_update(int action, int state, int reward, int new_state, actions_possible actions);
 

@@ -1,7 +1,7 @@
 #include "qlearning-tictactoe.h"
 
 float alpha_value = 0.2 ; // learning rate 
-float gamma_value = 0.990 ; // discount factor (importance given to future rewards compared to immediate rewards)
+float gamma_value = 0.99 ; // discount factor (importance given to future rewards compared to immediate rewards)
 int nb_episodes = 1000;
 
 double** q; //Table q for state-action values
@@ -39,14 +39,17 @@ actions_possible recherche_actions_possible(int* grille){
         int number_actions = 0 ;
         int cmpt = 0 ;
 
+        // Count the number of available actions
         for (int i = 0 ; i < 9 ; ++i){
                 if(grille[i] == 0){
                 ++number_actions;
                 }
         }
 
+        // Allocate memory for the actions array
         int *actions = malloc(sizeof(int) * number_actions);
 
+        // Store the available actions in the array
         for (int i = 0 ; i < 9 ; ++i){
                 if(grille[i] == 0){
                 actions[cmpt] = i ;
@@ -54,8 +57,8 @@ actions_possible recherche_actions_possible(int* grille){
                 }
         }
 
-        results.number_actions = number_actions ;
-        results.list_actions = actions ; 
+        results.number_actions = number_actions ; //number of possible actions (empty cells)
+        results.list_actions = actions ; // array containing the numbers of the empty cells
 
     return results;
 }
@@ -64,61 +67,88 @@ void free_actions(int *actions){
     free(actions);
 }
 
+// Return the ternary value representing the grid (x=1, o=2, and empty=0)
 int gridTotern(int *grid){
     int tern = 0 ;
-
     for (int i = 0; i < 9; i++) {
         tern += grid[8 - i] * pow(10, i);
     }
-
-
     return tern;
 }
 
+// Function to convert a ternary number to decimal
 int convertToDecimal(int t) {
     int decimalNumber = 0, i = 0, remainder;
     while (t != 0) {
-        remainder = t % 10;
-        t /= 10;
+        remainder = t % 10; // Get the rightmost digit of the ternary number
+        t /= 10; // Remove the rightmost digit
         decimalNumber += remainder * pow(3, i);
         ++i;
     }
     return decimalNumber;
 }
 
+// Get the state representation of the grid
 int get_state(int *grille){
         int tern = gridTotern(grille);
         int state = convertToDecimal(tern);
         return state;
 }
 
-
-int inversionchiffre(int tern){
-    int resultat = 0;
+// Invert the digits 1 and 2 in a ternary number
+int invert_digits(int ternary) {
+    int result = 0;
     int position = 1;
 
-    while (tern != 0) {
-        int chiffre = tern % 10;
-        if (chiffre == 1) {
-            chiffre = 2;
-        } else if (chiffre == 2) {
-            chiffre = 1;
+    while (ternary != 0) {
+        int digit = ternary % 10;
+        if (digit == 1) {
+            digit = 2;
+        } else if (digit == 2) {
+            digit = 1;
         }
-        resultat = resultat + chiffre * position;
+        result = result + digit * position;
         position *= 10;
-        tern /= 10;
+        ternary /= 10;
     }
 
-    return resultat;
+    return result;
 }
 
+// Invert the first and last digits of a ternary number
+int invert_first_last(int ternary) {
+    // Extract individual digits
+    int digit1 = ternary / 100;
+    int digit2 = (ternary / 10) % 10;
+    int digit3 = ternary % 10;
+
+    // Invert the first and last digits
+    int inverted = digit3 * 100 + digit2 * 10 + digit1;
+
+    return inverted;
+}
+
+// Find similarities in tic-tac-toe states
 similitudes recherche_similitude(int tern){
-    // A compléter pour les rotations 
-
     similitudes results ;
-    // Inversion joueur & adversaire 
-    results.mirroir = inversionchiffre(tern);
 
+    // Extract the digit blocks from the ternary number
+    int bloc1 = tern % 1000; // Last 3 digits
+    int bloc2 = (tern / 1000) % 1000; // Middle 3 digits
+    int bloc3 = tern / 1000000; // First 3 digits
+
+    // Calculate the inverse of each block
+    int bloc1inv = invert_first_last(bloc1);
+    int bloc2inv = invert_first_last(bloc2);
+    int bloc3inv = invert_first_last(bloc3);
+
+    // Perform rotations on the ternary number
+    results.rotation_90 = bloc1 * 1000000 + bloc2 * 1000 + bloc3;
+    results.rotation_180 = bloc1inv * 1000000 + bloc2inv * 1000 + bloc3inv;
+    results.rotation_270 = bloc3inv * 1000000 + bloc2inv * 1000 + bloc1inv;
+
+    // Perform rotations on the ternary number
+    results.mirroir = invert_digits(tern);
 
     return results; 
 }
@@ -138,8 +168,7 @@ int best_action(int state, double *max_val, actions_possible actions){
 }
 
 int random_action(actions_possible actions){
-
-        srand(time(NULL)); 
+        // Generate a random number within the range of available actions
         int chiffre = rand() % (actions.number_actions + 1); 
         return actions.list_actions[chiffre];
 }
@@ -170,7 +199,7 @@ int choose_action_epsillon_greedy(int state, double epsilon, actions_possible ac
         }
 }
 
-
+/*
 //Take the reward based on the agent's current state
 int* get_rewards(int *grid, actions_possible actions){
         int *rewards = malloc(sizeof(int) * 9) ;
@@ -179,6 +208,7 @@ int* get_rewards(int *grid, actions_possible actions){
 
         // DANS LA FONCTION OU ON UTILE REWARDS, PENSER A FREE REWARDS
 }
+*/
 
 //Saving the q-values to q_values.txt
 void extract_q_values(){
@@ -202,9 +232,7 @@ void extract_q_values(){
 
 int main(){
         //Initialize the time for the random number generator
-        srand(time(0));
-
-        
+        srand(time(0));       
 
         q_init(); //Table q for state-action values
         
@@ -216,23 +244,21 @@ int main(){
 
         double epsilon = 0.9;
         double epsilon_end=0.01;
-        
-        srand(time(0));
+
+        //Create an empty tic-tac-toe grid
         int *pgrille = creer_grille();
 
         for (int episode = 0 ; episode < nb_episodes ; ++episode){
 
-        // grid_reset();
         reset_grid(pgrille);
         state = get_state(pgrille);
         
         // Chosing action
         actions_possible actions = recherche_actions_possible(pgrille);
-        state_action = choose_action_epsillon_greedy(state, epsilon,actions);
-        
-        // Get reward & new state
+        state_action = choose_action_epsillon_greedy(state, epsilon, actions);
 
-        new_state = get_state(pgrille);
+        // Get reward & new state
+        new_state = get_state(pgrille);    
         reward = get_reward(pgrille , actions);
 
         new_action = q_update(state_action, state,reward, new_state, actions);
@@ -282,10 +308,8 @@ int main(){
         //Saving the q-values to q_values.txt
         //extract_q_values();
 
-
-
-
         //Free the memory
+        free_grille(pgrille);
         q_destroy();
 
         return 0 ;
