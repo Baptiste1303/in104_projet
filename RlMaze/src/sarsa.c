@@ -183,6 +183,11 @@ int main(){
         //Initialize the time for the random number generator
         srand(time(0));
 
+        // For the timer
+        clock_t start, end;
+        double cpu_time_used;
+        start = clock(); // Start measuring execution time
+
         mazeEnv_make("../data/maze.txt");
         init_visited();
 
@@ -271,5 +276,10 @@ int main(){
         mazeEnv_destroy();
         visited_destroy();
 
+        end = clock(); // Stop measuring execution time
+
+        // Calculate the elapsed time in seconds and display 
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        printf("Temps d'execution : %f secondes\n", cpu_time_used);
         return 0 ;
 }
