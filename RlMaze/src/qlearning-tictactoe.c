@@ -2,9 +2,10 @@
 
 float alpha_value = 0.2 ; // learning rate 
 float gamma_value = 0.99 ; // discount factor (importance given to future rewards compared to immediate rewards)
-int nb_episodes = 1000;
+int nb_episodes = 10;
 
 double** q; //Table q for state-action values
+int* reward;
 
 //Table q for state-action values
 void q_alloc(){
@@ -32,39 +33,103 @@ void q_destroy(){
         free(q);
 }
 
-// cette fonction intialise actions en meme temps 
-actions_possible recherche_actions_possible(int* grille){
+void r_alloc(){
+        reward = malloc(sizeof(int) * 9);
 
-        actions_possible results ;
-        int number_actions = 0 ;
-        int cmpt = 0 ;
+        if (reward == NULL) {
+        // La mémoire n'a pas pu être allouée, afficher un message d'erreur
+        printf("Erreur : échec de l'allocation de mémoire pour le tableau.\n");
+        exit(EXIT_FAILURE);  // Quitter le programme avec un code d'erreur
+    }
 
-        // Count the number of available actions
-        for (int i = 0 ; i < 9 ; ++i){
-                if(grille[i] == 0){
-                ++number_actions;
-                }
-        }
-
-        // Allocate memory for the actions array
-        int *actions = malloc(sizeof(int) * number_actions);
-
-        // Store the available actions in the array
-        for (int i = 0 ; i < 9 ; ++i){
-                if(grille[i] == 0){
-                actions[cmpt] = i ;
-                ++cmpt;
-                }
-        }
-
-        results.number_actions = number_actions ; //number of possible actions (empty cells)
-        results.list_actions = actions ; // array containing the numbers of the empty cells
-
-    return results;
 }
 
-void free_actions(int *actions){
-    free(actions);
+void reset_reward(){
+        for (int i = 0 ; i < 10 ; ++i){
+                reward[i] = 0 ;
+        }
+}
+
+int checkForWin(int* grid, int player, int move) {
+    // On ajoute le mouvement du joueur à la simulation du plateau
+    grid[move] = player;
+
+    // Toutes les combinaisons gagnantes possibles dans un jeu de morpion
+    int wins[8][3] = {
+        {0, 1, 2}, {3, 4, 5}, {6, 7, 8}, // lignes
+        {0, 3, 6}, {1, 4, 7}, {2, 5, 8}, // colonnes
+        {0, 4, 8}, {2, 4, 6}  // diagonales
+    };
+
+    // On parcourt toutes les combinaisons pour voir si le joueur a gagné
+    for (int i = 0; i < 8; ++i) {
+        if (grid[wins[i][0]] == player && grid[wins[i][1]] == player && grid[wins[i][2]] == player) {
+            // On retire le mouvement du joueur de la simulation du plateau
+            grid[move] = 0;
+            return 1;
+        }
+    }
+
+    // On retire le mouvement du joueur de la simulation du plateau
+    grid[move] = 0;
+    return 0;
+}
+
+int couldHaveBlockedWin(int* grid, int player, int chosenMove) {
+    // On détermine qui est l'adversaire
+    int opponent = player == 1 ? 2 : 1;
+
+    // On ajoute le mouvement du joueur à la simulation du plateau
+    grid[chosenMove] = player;
+
+    // On va vérifier chaque position vide sur le plateau
+    for (int i = 0; i < 9; ++i) {
+        if (grid[i] == 0) {
+            // On ajoute le mouvement de l'adversaire à la simulation du plateau
+            grid[i] = opponent;
+
+            // On vérifie si ce mouvement pourrait mener à une victoire pour l'adversaire
+            if (checkForWin(grid, opponent, i)) {
+                // On retire les mouvements du joueur et de l'adversaire de la simulation du plateau
+                grid[i] = 0;
+                grid[chosenMove] = 0;
+                return 1;
+            }
+
+            // On retire le mouvement de l'adversaire de la simulation du plateau
+            grid[i] = 0;
+        }
+    }
+
+    // On retire le mouvement du joueur de la simulation du plateau
+    grid[chosenMove] = 0;
+    return 0;
+}
+
+
+
+//Take the reward based on the agent's current state
+void get_rewards(int *grid){
+        for (int i = 0 ; i < 10 ; ++i){
+                if (grid[i] == 2 || grid[i] == 1){
+                        reward[i] = -5;
+                }
+                else if (i == 4 && grid[i] == 0){
+                        // center of the tictactoe
+                        reward[i] = 50;
+                }
+                else if (checkForWin(grid,1,i) == 1){
+                        reward[i] = 1000;
+                }
+                else if(couldHaveBlockedWin(grid,1,i) == 1){
+                        reward[i] = -500;
+                }
+        }
+        
+}
+
+void r_destroy(){
+        free(reward);
 }
 
 // Return the ternary value representing the grid (x=1, o=2, and empty=0)
@@ -129,8 +194,9 @@ int invert_first_last(int ternary) {
 }
 
 // Find similarities in tic-tac-toe states
-similitudes recherche_similitude(int tern){
+similitudes recherche_similitude(int* grid){
     similitudes results ;
+    int tern = gridTotern(grid);
 
     // Extract the digit blocks from the ternary number
     int bloc1 = tern % 1000; // Last 3 digits
@@ -143,22 +209,23 @@ similitudes recherche_similitude(int tern){
     int bloc3inv = invert_first_last(bloc3);
 
     // Perform rotations on the ternary number
-    results.rotation_90 = bloc1 * 1000000 + bloc2 * 1000 + bloc3;
-    results.rotation_180 = bloc1inv * 1000000 + bloc2inv * 1000 + bloc3inv;
-    results.rotation_270 = bloc3inv * 1000000 + bloc2inv * 1000 + bloc1inv;
+    results.rotation_90 =  convertToDecimal(bloc1 * 1000000 + bloc2 * 1000 + bloc3) ;
+    results.rotation_180 = convertToDecimal(bloc1inv * 1000000 + bloc2inv * 1000 + bloc3inv);
+    results.rotation_270 = convertToDecimal(bloc3inv * 1000000 + bloc2inv * 1000 + bloc1inv);
 
     // Perform rotations on the ternary number
-    results.mirroir = invert_digits(tern);
+    int mirroir = invert_digits(tern);
+    results.mirroir = convertToDecimal(mirroir);
 
     return results; 
 }
 
 //Return the best action and its value in Q for a given state
-int best_action(int state, double *max_val, actions_possible actions){
+int best_action(int state, double *max_val){
         int action_index = 0 ;
         *max_val = q[state][0]; //Passed by reference
 
-        for (int i = 0; i < actions.number_actions; i++) {
+        for (int i = 0; i < 9; i++) {
                 if (q[state][i] > *max_val) {
                 *max_val = q[state][i];
                 action_index = i ;
@@ -167,53 +234,49 @@ int best_action(int state, double *max_val, actions_possible actions){
         return action_index;
 }
 
-int random_action(actions_possible actions){
+int random_action(){
         // Generate a random number within the range of available actions
-        int chiffre = rand() % (actions.number_actions + 1); 
-        return actions.list_actions[chiffre];
+        int chiffre = rand() % (9 + 1); 
+        return chiffre;
 }
 
 //Update the q-table
-int q_update(int action, int state, int reward, int new_state, actions_possible actions){
+int q_update(int action, int state, int new_state, int* grid){
         // return the action that maximize q
         double max_val;
-        int b_action = best_action(new_state, &max_val, actions);
+        int b_action = best_action(new_state, &max_val);
 
-        q[state][action] = q[state][action] + alpha_value * (reward + gamma_value * max_val - q[state][action]);
+        similitudes other_state = recherche_similitude(grid);
+
+        q[state][action] = q[state][action] + alpha_value * ( reward[action] + gamma_value * max_val - q[state][action]);
+        q[other_state.mirroir][action] = q[other_state.mirroir][action] + alpha_value * ( reward[action] + gamma_value * max_val - q[other_state.mirroir][action]);
+        q[other_state.rotation_90][action] = q[other_state.rotation_90][action] + alpha_value * ( reward[action] + gamma_value * max_val - q[other_state.rotation_90][action]);
+        q[other_state.rotation_180][action] = q[other_state.rotation_180][action] + alpha_value * ( reward[action] + gamma_value * max_val - q[other_state.rotation_180][action]);
+        q[other_state.rotation_270][action] = q[other_state.rotation_270][action] + alpha_value * ( reward[action] + gamma_value * max_val - q[other_state.rotation_270][action]);
+
         return b_action;
 }
 
 // Choose the next action to take using an epsilon-greedy policy
-int choose_action_epsillon_greedy(int state, double epsilon, actions_possible actions){
+int choose_action_epsillon_greedy(int state, double epsilon){
         //Generate a random number between 0 and 1
         double random_number = (double)rand() / RAND_MAX;
 
         if (random_number > epsilon) {
                 // Exploitation: Choose the action with the highest Q-value for the current state
                 double unused;
-                int b_action=best_action(state, &unused, actions);
+                int b_action=best_action(state, &unused);
                 return b_action;
         } else {
                 // Exploration: Choose a random action
-                return random_action(actions);
+                return random_action();
         }
 }
-
-/*
-//Take the reward based on the agent's current state
-int* get_rewards(int *grid, actions_possible actions){
-        int *rewards = malloc(sizeof(int) * 9) ;
-
-
-
-        // DANS LA FONCTION OU ON UTILE REWARDS, PENSER A FREE REWARDS
-}
-*/
 
 //Saving the q-values to q_values.txt
 void extract_q_values(){
         FILE* fp;
-        fp = fopen("../data/q_values.txt", "w");
+        fp = fopen("../data/q_values_tictactoe.txt", "w");
         if (fp == NULL) {
                 printf("Erreur : Impossible d'ouvrir le fichier.\n");
                 return ;
@@ -235,10 +298,11 @@ int main(){
         srand(time(0));       
 
         q_init(); //Table q for state-action values
-        
+        r_alloc();
+
+
         int state; 
         int new_state;
-        int reward;
         int state_action;
         int new_action;
 
@@ -247,21 +311,21 @@ int main(){
 
         //Create an empty tic-tac-toe grid
         int *pgrille = creer_grille();
-
+        
         for (int episode = 0 ; episode < nb_episodes ; ++episode){
 
         reset_grid(pgrille);
         state = get_state(pgrille);
         
         // Chosing action
-        actions_possible actions = recherche_actions_possible(pgrille);
-        state_action = choose_action_epsillon_greedy(state, epsilon, actions);
+        state_action = choose_action_epsillon_greedy(state, epsilon);
+        placer(pgrille, state_action, 1);
 
         // Get reward & new state
         new_state = get_state(pgrille);    
-        reward = get_reward(pgrille , actions);
+        get_rewards(pgrille );
 
-        new_action = q_update(state_action, state,reward, new_state, actions);
+        new_action = q_update(state_action, state, new_state, pgrille);
        
         // Update state and action
         state = new_state ;
@@ -269,22 +333,23 @@ int main(){
 
         // Update the grid
 
-        placer(pgrille, state_action, 1);
+        
         placer_alea(pgrille, 2);
         
         while(a_gagne(pgrille,1) == -1){
                 state = get_state(pgrille);
         
                 // Chosing action
-                actions_possible actions = recherche_actions_possible(pgrille);
-                state_action = choose_action_epsillon_greedy(state, epsilon,actions);
-        
+                state_action = choose_action_epsillon_greedy(state, epsilon);
+                placer(pgrille, state_action, 1);
+                //afficher(pgrille);
+
                 // Get reward & new state
 
                 new_state = get_state(pgrille);
-                reward = get_reward(pgrille , actions);
+                get_rewards(pgrille);
 
-                new_action = q_update(state_action, state,reward, new_state, actions);
+                new_action = q_update(state_action, state, new_state, pgrille);
        
                 // Update state and action
                 state = new_state ;
@@ -292,8 +357,8 @@ int main(){
 
                 // Update the grid
 
-                placer(pgrille, state_action, 1);
                 placer_alea(pgrille, 2);
+                //afficher(pgrille);
 
         }
 
@@ -302,14 +367,15 @@ int main(){
         // ensure that the exploration rate does not go below the final rate
         epsilon=(epsilon<epsilon_end) ? epsilon_end : epsilon;
 
-        free_actions(actions.list_actions);
+        
         }
 
         //Saving the q-values to q_values.txt
-        //extract_q_values();
+        extract_q_values();
 
         //Free the memory
-        free_grille(pgrille);
+        free_grille(pgrille); 
+        r_destroy();
         q_destroy();
 
         return 0 ;

@@ -1,18 +1,9 @@
 #### TO DO LIST ####
  
-Petites remarques :
--ne faudrait-il pas actueliser la grille avant de calculer la récompense ?
+ créer un nouveau dossier git ou on déplace le projet pour tictactoe
 
-Trouver une relation mathématiques pour trouver les récompenses 
+Faire un mode ou on peut juste jouer contre l'IA après entrainement
 
-Créer un moyen de reset la grille et d'un boolen pour la boucle while
+## DIFICULTES ## 
 
-Mettre en place l'algorithme 
-
-Enregistrer les valeurs de Q car une fois entrainé on le re entraine plus 
-
-Faire un mode ou on peut juste jouer contre l'IA 
-
-
-J'ai déplacé les fonctions de tictactoe car dedans faudrait qu'il y est juste 
-les fonctions pour jouer au jeux
+munmap_chunk(): invalid pointer -> ? 
