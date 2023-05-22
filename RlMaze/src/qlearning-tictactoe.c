@@ -342,7 +342,8 @@ int main(){
                 // Chosing action
                 state_action = choose_action_epsillon_greedy(state, epsilon);
                 placer(pgrille, state_action, 1);
-                //afficher(pgrille);
+                afficher(pgrille);
+                printf(" \n");
 
                 // Get reward & new state
 
@@ -358,7 +359,8 @@ int main(){
                 // Update the grid
 
                 placer_alea(pgrille, 2);
-                //afficher(pgrille);
+                afficher(pgrille);
+                printf(" \n");
 
         }
 
@@ -376,7 +378,7 @@ int main(){
         //Free the memory
         free_grille(pgrille); 
         r_destroy();
-        q_destroy();
+        //q_destroy();
 
         return 0 ;
 }
