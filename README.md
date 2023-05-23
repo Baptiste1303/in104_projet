@@ -41,7 +41,6 @@ En l'excutant grâce à ``./qlearning.x`` cela :
 Il est également possible de résoudre le labyrinthe grâce à la commande ``make sarsa.x``.
 En l'excutant grâce à ``./sarsa.x`` cela effectue les mêmes tâches que précedement mais en utilisant l'algorithme SARSA.
 
-Comment exécuter le programme tictactoe.x ? 
 Pour lancer l'apprentissage de l'algorithme sur le morpion, il faut rentrer la commande ``make tictactoe.x``. 
 En l'executant grâce à ``./tictactoe.x`` cela remplit le tableau Q avec l'algorithme q-learning dans le cadre d'un agent contre un adversaire jouant aléatoirement. 
 
@@ -56,5 +55,6 @@ Les principales difficultés rencontrées sont :
 * Difficultés pour faire en sorte que les algorithmes qlearning.c et dfs.c puissent compiler en même temps. En effet, la variable r (tableau regroupant les récompenses) était utiliséé dans MazeEnv.c, mais non utilisée pour dfs.c et indisensable dans qlearning.c [réglé]
 * L'utilisation de la fonction *update_visited(state_col,state_row)* induit un segmentation fault. L'erreur était due à l'inversion des arguments entre lignes et colonnes. [réglé]
 * Morpion : L'apprentissage est beaucoup trop lent malgré les fonctionnalités de factorisation déjà implémentées. [non réglé]
+* Morpion : Erreur munmap_chunk(): invalid pointer lorsque le nombre d'épisode augmente trop [non réglé]
 
 L'algorithme [qlearning.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/qlearning.c), [sarsac.c](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/sarsa.c) ainsi que le [Makefile](https://github.com/Baptiste1303/in104_projet/blob/main/RlMaze/src/Makefile) sont fonctionnels.
